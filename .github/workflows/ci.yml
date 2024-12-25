@@ -5,8 +5,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-test-publish:
-    name: Build, Test and Publish Artifact
+  build-and-publish:
+    name: Build and Publish Artifact
     runs-on: ubuntu-latest
 
     steps:
