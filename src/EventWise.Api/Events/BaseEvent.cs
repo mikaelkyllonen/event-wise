@@ -13,6 +13,7 @@ public abstract class BaseEvent(
     public string Name { get; private set; } = name;
     public string Description { get; private set; } = description;
     public string Location { get; private set; } = location;
+    public EventState EventState { get; private set; } = EventState.Published;
     public DateTime StartTimeUtc { get; private set; } = startTime;
     public DateTime? EndTimeUtc { get; private set; } = endTime;
     public DateTime CreatedAtUtc { get; private set; } = DateTime.UtcNow;
@@ -30,6 +31,14 @@ public abstract class BaseEvent(
 
         return Result.Success();
     }
+}
+
+public enum EventState
+{
+    Published,
+    InProgress,
+    Completed,
+    Canceled
 }
 
 public static class EventErrors
