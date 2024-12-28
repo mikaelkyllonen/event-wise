@@ -12,7 +12,7 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi(options => 
+builder.Services.AddOpenApi(options =>
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
 
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
@@ -21,27 +21,25 @@ builder.Services.AddProblemDetails();
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("User", policy => policy.RequireRole("user"));
 
-var authority = builder.Configuration.GetValue<string>("Authentication:Schemes:Bearer:ValidAuthority");
-var audiences = builder.Configuration.GetSection("Authentication:Schemes:Bearer:ValidAudiences").Get<string[]>();
-var issuer = builder.Configuration.GetValue<string>("Authentication:Schemes:Bearer:ValidIssuers:0");
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        var key = builder.Configuration.GetSection("Authentication:Schemes:Bearer:SigningKeys:0").GetValue<string>("Value")!;
-        options.Authority = authority;
+        var jwtOptions = builder.Configuration
+            .GetSection("Authentication:Schemes:Bearer")
+            .Get<EventWise.Api.JwtBearerOptions>()!;
+
+        options.Authority = jwtOptions.ValidAuthority;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = issuer,
+            ValidIssuer = jwtOptions.ValidIssuers[0],
             ValidateAudience = true,
-            ValidAudiences = audiences,
+            ValidAudiences = jwtOptions.ValidAudiences,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
             ValidateIssuerSigningKey = true,
             RequireSignedTokens = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(key))
-            //NameClaimType = ClaimTypes.NameIdentifier
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtOptions.SigningKeys[0].Value))
         };
 
         //if (builder.Environment.IsDevelopment())
@@ -122,7 +120,7 @@ internal sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvi
                                 Type = ReferenceType.SecurityScheme
                             },
 
-                            
+
                         }
                     ] = Array.Empty<string>()
                 });
