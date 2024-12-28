@@ -35,7 +35,11 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/a", (UserContext userContext) => userContext.UserId()).RequireAuthorization();
-app.MapGet("/b", (UserContext userContext) => userContext.UserId());
+app.MapPost("/events", (UserContext userContext) =>
+{
+    
+})
+.RequireAuthorization("User")
+.WithTags("Events");
 
 app.Run();
