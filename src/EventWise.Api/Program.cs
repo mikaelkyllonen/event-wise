@@ -16,6 +16,9 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.AddAuthentication();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<UserContext>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -31,5 +34,8 @@ app.UseStatusCodePages();
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
+
+app.MapGet("/a", (UserContext userContext) => userContext.UserId()).RequireAuthorization();
+app.MapGet("/b", (UserContext userContext) => userContext.UserId());
 
 app.Run();
