@@ -13,9 +13,9 @@ public abstract class BaseEvent(
     public string Name { get; private set; } = name;
     public string Description { get; private set; } = description;
     public string Location { get; private set; } = location;
-    public DateTime StartTime { get; private set; } = startTime;
-    public DateTime? EndTime { get; private set; } = endTime;
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public DateTime StartTimeUtc { get; private set; } = startTime;
+    public DateTime? EndTimeUtc { get; private set; } = endTime;
+    public DateTime CreatedAtUtc { get; private set; } = DateTime.UtcNow;
 
     protected static Result Validate(DateTime startTime, DateTime endTime)
     {
@@ -36,18 +36,27 @@ public static class EventErrors
 {
     public static readonly Error StartTimeAfterEndTime = new(
         "Event.StartTimeAfterEndTime",
-        "Start time cannot be after end time.");
+        "Start time cannot be after end time");
 
     public static readonly Error StartTimeInPast = new(
         "Event.StartTimeInPast",
-        "Start time cannot be in the past.");
+        "Start time cannot be in the past");
+
+    public static readonly Error MaxParticipantsLessThanOne = new(
+        "Event.MaxParticipantsLessThanOne",
+        "Max participants cannot be less than 1");
+
+    public static readonly Error MaxParticipantsGreaterThanMax = new(
+        "Event.MaxParticipantsGreaterThanMax",
+        $"Max participants cannot be greater than {UserEvent.MaxParticipantsForUserEvents}");
 }
 
 public sealed class UserEvent : BaseEvent
 {
+    public static readonly int MaxParticipantsForUserEvents = 10;
+
     public Guid HostId { get; private set; }
     public int MaxParticipants { get; private set; }
-    //public List<EventParticipant> Participants { get; private set; } = new();
 
     private UserEvent(
         Guid hostId,
@@ -77,17 +86,22 @@ public sealed class UserEvent : BaseEvent
         {
             return Result.Failure<UserEvent>(baseValidation.Error);
         }
-
-        if (maxParticipants <= 0)
-            return Result.Failure<UserEvent>("Max participants must be greater than zero.");
+        if (maxParticipants < 1)
+        {
+            return Result.Failure<UserEvent>(EventErrors.MaxParticipantsLessThanOne);
+        }
+        if (maxParticipants > MaxParticipantsForUserEvents)
+        {
+            return Result.Failure<UserEvent>(EventErrors.MaxParticipantsGreaterThanMax);
+        }
 
         return new UserEvent(
-            hostId,
-            name,
-            description,
-            location,
-            maxParticipants,
-            startTimeUtc,
-            endTimeUtc);
+        hostId,
+        name,
+        description,
+        location,
+        maxParticipants,
+        startTimeUtc,
+        endTimeUtc);
     }
 }
