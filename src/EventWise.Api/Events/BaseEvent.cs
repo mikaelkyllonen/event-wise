@@ -1,39 +1,46 @@
-﻿namespace EventWise.Api.Events;
+﻿using EventWise.Api.Common;
 
-public abstract class BaseEvent
+namespace EventWise.Api.Events;
+
+public abstract class BaseEvent(
+    string name,
+    string description,
+    string location,
+    DateTime startTime,
+    DateTime endTime)
 {
-    //private BaseEvent(string name, string description, string location, DateTime startTime, DateTime endTime)
-    //{
-    //    Validate(name, description, location, startTime, endTime);
-    //}
     public Guid Id { get; private set; } = Guid.CreateVersion7();
     public string Name { get; private set; } = name;
     public string Description { get; private set; } = description;
     public string Location { get; private set; } = location;
     public DateTime StartTime { get; private set; } = startTime;
-    public DateTime EndTime { get; private set; } = endTime;
+    public DateTime? EndTime { get; private set; } = endTime;
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-
-    protected static void Validate(string name, string description, string location, DateTime startTime, DateTime endTime)
+    protected static Result Validate(DateTime startTime, DateTime endTime)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (startTime > endTime)
         {
-            throw new ArgumentException("Name cannot be null or empty.", nameof(name));
+            return Result.Failure(EventErrors.StartTimeAfterEndTime);
         }
-        if (string.IsNullOrWhiteSpace(description))
+        if (startTime < DateTime.UtcNow)
         {
-            throw new ArgumentException("Description cannot be null or empty.", nameof(description));
+            return Result.Failure(EventErrors.StartTimeInPast);
         }
-        if (string.IsNullOrWhiteSpace(location))
-        {
-            throw new ArgumentException("Location cannot be null or empty.", nameof(location));
-        }
-        if (startTime >= endTime)
-        {
-            throw new ArgumentException("Start time must be before end time.", nameof(startTime));
-        }
+
+        return Result.Success();
     }
+}
+
+public static class EventErrors
+{
+    public static readonly Error StartTimeAfterEndTime = new(
+        "Event.StartTimeAfterEndTime",
+        "Start time cannot be after end time.");
+
+    public static readonly Error StartTimeInPast = new(
+        "Event.StartTimeInPast",
+        "Start time cannot be in the past.");
 }
 
 public sealed class UserEvent : BaseEvent
@@ -50,7 +57,7 @@ public sealed class UserEvent : BaseEvent
         int maxParticipants,
         DateTime startTimeUtc,
         DateTime endTimeUtc)
-        //: base(name, description, location, startTimeUtc, endTimeUtc)
+        : base(name, description, location, startTimeUtc, endTimeUtc)
     {
         HostId = hostId;
         MaxParticipants = maxParticipants;
@@ -65,20 +72,22 @@ public sealed class UserEvent : BaseEvent
         DateTime startTimeUtc,
         DateTime endTimeUtc)
     {
-        var baseValidation = ValidateBaseEvent(name, description, location, startTimeUtc, endTimeUtc);
+        var baseValidation = Validate(startTimeUtc, endTimeUtc);
         if (baseValidation.IsFailure)
+        {
             return Result.Failure<UserEvent>(baseValidation.Error);
+        }
 
         if (maxParticipants <= 0)
             return Result.Failure<UserEvent>("Max participants must be greater than zero.");
 
-        return Result.Success(new UserEvent(
+        return new UserEvent(
             hostId,
             name,
             description,
             location,
             maxParticipants,
             startTimeUtc,
-            endTimeUtc));
+            endTimeUtc);
     }
 }
