@@ -32,8 +32,4 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => "Hello World!").AllowAnonymous();
-app.MapGet("/another-endpoint", () => "Hello!").RequireAuthorization("User");
-app.MapGet("/a", () => "Hello!").RequireAuthorization("User");
-
 app.Run();
