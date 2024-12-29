@@ -44,6 +44,7 @@ app.UseHttpsRedirection();
 
 app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
     await dbContext.Events
+        .AsNoTracking()
         .Where(e => e.EventState == EventState.Published)
         .ToListAsync(ct))
 .WithTags("Events");
@@ -75,9 +76,9 @@ app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext
 app.MapGet("/events/{id}", async (Guid id, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
     var @event = await dbContext.Events.FindAsync([id], cancellationToken: ct);
-    
-    return @event is null 
-    ? Results.NotFound() 
+
+    return @event is null
+    ? Results.NotFound()
     : Results.Ok(
         new GetEventResponse(
             @event.Id,
