@@ -16,7 +16,7 @@ public sealed class UserEvent : BaseEvent
         string location,
         int maxParticipants,
         DateTime startTimeUtc,
-        DateTime endTimeUtc)
+        DateTime? endTimeUtc)
         : base(name, description, location, startTimeUtc, endTimeUtc)
     {
         HostId = hostId;
@@ -30,7 +30,7 @@ public sealed class UserEvent : BaseEvent
         string location,
         int maxParticipants,
         DateTime startTimeUtc,
-        DateTime endTimeUtc)
+        DateTime? endTimeUtc)
     {
         var baseValidation = Validate(startTimeUtc, endTimeUtc);
         if (baseValidation.IsFailure)

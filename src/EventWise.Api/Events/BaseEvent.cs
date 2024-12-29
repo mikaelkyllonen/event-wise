@@ -7,7 +7,7 @@ public abstract class BaseEvent(
     string description,
     string location,
     DateTime startTime,
-    DateTime endTime)
+    DateTime? endTime)
 {
     public Guid Id { get; private set; } = Guid.CreateVersion7();
     public string Name { get; private set; } = name;
@@ -18,9 +18,9 @@ public abstract class BaseEvent(
     public DateTime? EndTimeUtc { get; private set; } = endTime;
     public DateTime CreatedAtUtc { get; private set; } = DateTime.UtcNow;
 
-    protected static Result Validate(DateTime startTime, DateTime endTime)
+    protected static Result Validate(DateTime startTime, DateTime? endTime)
     {
-        if (startTime > endTime)
+        if (endTime.HasValue && startTime > endTime)
         {
             return Result.Failure(EventErrors.StartTimeAfterEndTime);
         }

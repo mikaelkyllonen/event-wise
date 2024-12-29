@@ -23,6 +23,9 @@ builder.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContext>();
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -49,11 +52,19 @@ app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbCon
 app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext) =>
 {
     var userId = userContext.UserId();
-    var result = UserEvent.Create(userId, request.Name, request.Description, request.Location, request.MaxParticipants, request.StartTime, request.EndTime);
+    var result = UserEvent.Create(
+        userId,
+        request.Name,
+        request.Description,
+        request.Location,
+        request.MaxParticipants,
+        request.StartTime,
+        request.EndTime);
     if (result.IsFailure)
     {
         return Results.BadRequest(result.Error);
     }
+
     await dbContext.Events.AddAsync(result.Value);
     await dbContext.SaveChangesAsync();
 
