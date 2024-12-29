@@ -9,8 +9,6 @@ public sealed class User
     public string LastName { get; private set; } = default!;
     public string Email { get; private set; } = default!;
 
-    public ICollection<EventParticipant> Participations { get; init; } = [];
-
     private User()
     { }
 
