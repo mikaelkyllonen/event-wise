@@ -2,6 +2,7 @@ using EventWise.Api;
 using EventWise.Api.Events;
 using EventWise.Api.Extensions;
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using Scalar.AspNetCore;
@@ -45,6 +46,28 @@ app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbCon
 .RequireAuthorization("User")
 .WithTags("Events");
 
+app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext) =>
+{
+    var userId = userContext.UserId();
+    var result = UserEvent.Create(userId, request.Name, request.Description, request.Location, request.MaxParticipants, request.StartTime, request.EndTime);
+    if (result.IsFailure)
+    {
+        return Results.BadRequest(result.Error);
+    }
+    await dbContext.Events.AddAsync(result.Value);
+    await dbContext.SaveChangesAsync();
 
+    return Results.Ok(result.Value);
+})
+.RequireAuthorization("User")
+.WithTags("Events");
 
 app.Run();
+
+public sealed record class CreateEventRequest(
+    string Name,
+    string Description,
+    string Location,
+    int MaxParticipants,
+    DateTime StartTime,
+    DateTime EndTime);
