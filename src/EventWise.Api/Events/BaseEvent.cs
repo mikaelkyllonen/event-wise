@@ -32,3 +32,24 @@ public abstract class BaseEvent(
         return Result.Success();
     }
 }
+
+public sealed class EventParticipant
+{
+    public Guid EventId { get; private set; }
+    public Guid ParticipantId { get; private set; }
+    public DateTime JoinedAtUtc { get; private set; }
+
+    public BaseEvent Event { get; private set; } = default!;
+
+    private EventParticipant(Guid eventId, Guid participantId)
+    {
+        EventId = eventId;
+        ParticipantId = participantId;
+        JoinedAtUtc = DateTime.UtcNow;
+    }
+
+    public static Result<EventParticipant> Create(Guid eventId, Guid participantId)
+    {
+        return new EventParticipant(eventId, participantId);
+    }
+}
