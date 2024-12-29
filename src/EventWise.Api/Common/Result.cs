@@ -33,7 +33,7 @@ public class Result
         new(default, false, error);
 }
 
-public sealed class Result<TValue>(TValue? value, bool isSuccess, Error error) 
+public sealed class Result<TValue>(TValue? value, bool isSuccess, Error error)
     : Result(isSuccess, error)
 {
     private readonly TValue? _value = value;

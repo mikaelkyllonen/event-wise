@@ -42,7 +42,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext) => 
+app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext) =>
     await dbContext.Events
         .Where(e => e.EventState == EventState.Published)
         .ToListAsync())

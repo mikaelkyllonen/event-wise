@@ -4,7 +4,7 @@ using EventWise.Api.Events;
 
 using Microsoft.EntityFrameworkCore;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : DbContext(options)
 {
     public DbSet<BaseEvent> Events { get; set; } = default!;

@@ -11,8 +11,8 @@ public sealed class UserContext(IHttpContextAccessor httpContextAccessor)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        return Guid.TryParse(userId, out var result) 
-            ? result 
+        return Guid.TryParse(userId, out var result)
+            ? result
             : throw new ApplicationException("User ID not found in claims.");
     }
 }

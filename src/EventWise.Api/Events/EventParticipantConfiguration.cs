@@ -12,7 +12,7 @@ public sealed class EventParticipantConfiguration : IEntityTypeConfiguration<Eve
         builder.HasOne(ep => ep.Event)
             .WithMany(e => e.Participants)
             .HasForeignKey(ep => ep.EventId);
-        
+
         builder.HasOne(ep => ep.Participant)
             .WithMany(u => u.Participations)
             .HasForeignKey(ep => ep.ParticipantId);
