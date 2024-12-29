@@ -16,6 +16,9 @@ public sealed class EventConfiguration : IEntityTypeConfiguration<BaseEvent>
         builder.Property(e => e.Location)
             .HasMaxLength(100);
 
+        builder.Property(e => e.EventState)
+            .HasConversion<string>();
+
         builder.HasDiscriminator<string>("EventType")
             .HasValue<UserEvent>(nameof(UserEvent));
     }
