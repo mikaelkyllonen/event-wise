@@ -6,8 +6,9 @@ public sealed class UserEvent : BaseEvent
 {
     public static readonly int MaxParticipantsForUserEvents = 10;
 
-    public Guid HostId { get; private set; }
     public int MaxParticipants { get; private set; }
+
+    public User Host { get; private set; } = default!;
 
     private UserEvent(
         Guid hostId,
@@ -17,9 +18,8 @@ public sealed class UserEvent : BaseEvent
         int maxParticipants,
         DateTime startTimeUtc,
         DateTime? endTimeUtc)
-        : base(name, description, location, startTimeUtc, endTimeUtc)
+        : base(hostId, name, description, location, startTimeUtc, endTimeUtc)
     {
-        HostId = hostId;
         MaxParticipants = maxParticipants;
     }
 
