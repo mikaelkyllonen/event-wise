@@ -1,5 +1,8 @@
 using EventWise.Api;
+using EventWise.Api.Events;
 using EventWise.Api.Extensions;
+
+using Microsoft.EntityFrameworkCore;
 
 using Scalar.AspNetCore;
 
@@ -35,11 +38,13 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-app.MapPost("/events", (UserContext userContext) =>
-{
-    
-})
+app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext) => 
+    await dbContext.Events
+        .Where(e => e.EventState == EventState.Published)
+        .ToListAsync())
 .RequireAuthorization("User")
 .WithTags("Events");
+
+
 
 app.Run();
