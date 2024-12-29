@@ -136,3 +136,5 @@ public sealed record GetEventResponse(
     DateTime StartTime,
     DateTime? EndTime,
     DateTime CreatedAtUtc);
+
+public partial class Program;
