@@ -42,14 +42,13 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext) =>
+app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
     await dbContext.Events
         .Where(e => e.EventState == EventState.Published)
-        .ToListAsync())
-.RequireAuthorization("User")
+        .ToListAsync(ct))
 .WithTags("Events");
 
-app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext) =>
+app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
     var userId = userContext.UserId();
     var result = UserEvent.Create(
@@ -65,20 +64,74 @@ app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext
         return Results.BadRequest(result.Error);
     }
 
-    await dbContext.Events.AddAsync(result.Value);
-    await dbContext.SaveChangesAsync();
+    await dbContext.Events.AddAsync(result.Value, ct);
+    await dbContext.SaveChangesAsync(ct);
 
-    return Results.Ok(result.Value);
+    return Results.Created($"/events/{result.Value.Id}", new CreateEventResponse(result.Value.Id));
 })
 .RequireAuthorization("User")
 .WithTags("Events");
 
+app.MapGet("/events/{id}", async (Guid id, ApplicationDbContext dbContext, CancellationToken ct) =>
+{
+    var @event = await dbContext.Events.FindAsync([id], cancellationToken: ct);
+    
+    return @event is null 
+    ? Results.NotFound() 
+    : Results.Ok(
+        new GetEventResponse(
+            @event.Id,
+            @event.Name,
+            @event.Description,
+            @event.Location,
+            @event.EventState,
+            @event.StartTimeUtc,
+            @event.EndTimeUtc,
+            @event.CreatedAtUtc));
+})
+.WithTags("Events");
+
+app.MapPost("/users", async ([FromBody] RegisterUserRequest request, ApplicationDbContext dbContext, CancellationToken ct) =>
+{
+    if (await dbContext.Users.AnyAsync(u => u.Id == request.Id, ct))
+    {
+        return Results.Conflict();
+    }
+
+    var result = User.Create(request.Id, request.FirstName, request.LastName, request.Email);
+    if (result.IsFailure)
+    {
+        return Results.BadRequest(result.Error);
+    }
+
+    await dbContext.Users.AddAsync(result.Value, ct);
+    await dbContext.SaveChangesAsync(ct);
+
+    return Results.Ok();
+})
+.RequireAuthorization() // TODO: Implement BFF Api key authorization
+.WithTags("Users");
+
 app.Run();
 
-public sealed record class CreateEventRequest(
+public sealed record RegisterUserRequest(Guid Id, string FirstName, string LastName, string Email);
+
+public sealed record CreateEventRequest(
     string Name,
     string Description,
     string Location,
     int MaxParticipants,
     DateTime StartTime,
     DateTime EndTime);
+
+public sealed record CreateEventResponse(Guid Id);
+
+public sealed record GetEventResponse(
+    Guid Id,
+    string Name,
+    string Description,
+    string Location,
+    EventState EventState,
+    DateTime StartTime,
+    DateTime? EndTime,
+    DateTime CreatedAtUtc);
