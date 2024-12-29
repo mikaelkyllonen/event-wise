@@ -1,4 +1,41 @@
 @EventWise.Api_HostAddress = https://localhost:7101
+@UserToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsInN1YiI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsImp0aSI6IjYyNzE3YTUiLCJyb2xlIjoidXNlciIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMDEiLCJuYmYiOjE3MzU0OTM2MTMsImV4cCI6MTc0MzI2OTYxMywiaWF0IjoxNzM1NDkzNjEzLCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.QNwMK8_KbspF_IhD-VY2OFrgLB6C6BavF9xMLccIhQU
 
-GET {{EventWise.Api_HostAddress}}/
-Accept: application/json
+# Create user
+POST {{EventWise.Api_HostAddress}}/users
+Authorization: Bearer {{UserToken}}
+Content-Type: application/json
+
+{
+  "id": "FBD14E10-B6BA-44A1-8218-CB8374F39D58",
+  "firstName": "Test",
+  "lastName": "User",
+  "email": "test@localhost"
+}
+
+###
+
+# Get events
+GET {{EventWise.Api_HostAddress}}/events
+
+###
+
+# Get event by an id
+@EventId = 01941381-2dc7-79f1-8d0e-48535f187922
+GET {{EventWise.Api_HostAddress}}/events/{{EventId}}
+
+###
+
+# Create a new event
+POST {{EventWise.Api_HostAddress}}/events
+Content-Type: application/json
+Authorization: Bearer {{UserToken}}
+
+{
+  "name": "Event name",
+  "description": "Event description",
+  "location": "Event location",
+  "maxParticipants": 1,
+  "startTime": "{{$datetime iso8601 1 d}}",
+  "endTime": "{{$datetime iso8601 2 d}}"
+}
