@@ -21,6 +21,12 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release
 
+    - name: Apply database migrations
+      run: dotnet ef database update
+
+    - name: List applied migrations
+      run: dotnet ef migrations list
+
     - name: Run tests
       run: dotnet test --configuration Release --no-build
 
