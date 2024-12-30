@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -37,6 +38,11 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 options.UseSqlServer(_dbContainer.GetConnectionString())
             );
 
+            //using var scope = Services.CreateScope();
+            //using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            //dbContext.Database.Migrate();
+
             services.Configure<Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration
@@ -54,6 +60,11 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
         await InitializeTestUserAsync();
     }
 
