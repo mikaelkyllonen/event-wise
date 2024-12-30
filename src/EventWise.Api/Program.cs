@@ -36,7 +36,7 @@ if (app.Environment.IsDevelopment())
     await using var scope = app.Services.CreateAsyncScope();
     using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    //await dbContext.Database.EnsureCreatedAsync();
+    await dbContext.Database.EnsureCreatedAsync();
     //await dbContext.Database.MigrateAsync();
 }
 

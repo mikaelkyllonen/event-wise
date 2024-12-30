@@ -36,8 +36,6 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_dbContainer.GetConnectionString())
-                .ConfigureWarnings(warnings => 
-                    warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
             );
 
             //using var scope = Services.CreateScope();
