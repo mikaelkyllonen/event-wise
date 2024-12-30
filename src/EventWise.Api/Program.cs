@@ -33,8 +33,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 
-    //await using var scope = app.Services.CreateAsyncScope();
-    //using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await using var scope = app.Services.CreateAsyncScope();
+    using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
     //await dbContext.Database.EnsureCreatedAsync();
     //await dbContext.Database.MigrateAsync();

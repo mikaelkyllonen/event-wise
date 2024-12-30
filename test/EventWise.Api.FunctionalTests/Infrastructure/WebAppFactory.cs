@@ -36,6 +36,8 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(_dbContainer.GetConnectionString())
+                .ConfigureWarnings(warnings => 
+                    warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
             );
 
             //using var scope = Services.CreateScope();
@@ -61,9 +63,11 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
     {
         await _dbContainer.StartAsync();
 
-        using var scope = Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
+        //using var scope = Services.CreateScope();
+        //var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        //await dbContext.Database.EnsureCreatedAsync();
+        
+        //await dbContext.Database.MigrateAsync();
 
         await InitializeTestUserAsync();
     }
