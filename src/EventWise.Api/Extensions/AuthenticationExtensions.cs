@@ -12,7 +12,7 @@ public static class AuthenticationExtensions
             {
                 var jwtOptions = builder.Configuration
                     .GetSection("Authentication:Schemes:Bearer")
-                    .Get<JwtBearerOptions>()!;
+                    .Get<JwtBearerOptions>()! ?? throw new InvalidOperationException("Bearer authentication options are missing.");
 
                 options.Authority = jwtOptions.ValidAuthority;
                 options.TokenValidationParameters = new TokenValidationParameters
