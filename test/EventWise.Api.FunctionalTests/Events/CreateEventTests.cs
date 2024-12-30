@@ -3,10 +3,14 @@ using System.Net.Http.Json;
 
 using EventWise.Api.FunctionalTests.Infrastructure;
 
+using Xunit.Abstractions;
+
 namespace EventWise.Api.FunctionalTests.Events;
 
-public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTests(factory)
+public sealed class CreateEventTests(WebAppFactory factory, ITestOutputHelper output) : BaseFunctionalTests(factory)
 {
+    private readonly ITestOutputHelper _output = output;
+
     [Fact]
     public async Task CreateEvent_WithValidData_ReturnsCreated()
     {
@@ -21,10 +25,10 @@ public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTest
 
         // Act
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        _output.WriteLine(responseContent);
 
         // Assert
-        var responseContent = await response.Content.ReadAsStringAsync();
-        Assert.Equal("", responseContent);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
@@ -42,10 +46,10 @@ public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTest
 
         // Act
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
-
-        // Assert
         var responseContent = await response.Content.ReadAsStringAsync();
-        Assert.Equal("", responseContent);
+        _output.WriteLine(responseContent);
+        
+        // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }
