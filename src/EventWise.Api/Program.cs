@@ -49,10 +49,13 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
-    await dbContext.Events
+    {
+        var userId = userContext.UserId();
+        await dbContext.Events
         .AsNoTracking()
         .Where(e => e.EventState == EventState.Published)
-        .ToListAsync(ct))
+        .ToListAsync(ct);
+    })
 .WithTags("Events");
 
 app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
@@ -116,7 +119,7 @@ app.MapPost("/users", async ([FromBody] RegisterUserRequest request, Application
 
     return Results.Ok();
 })
-.RequireAuthorization() // TODO: Implement BFF Api key authorization
+.RequireAuthorization("User") // TODO: Implement BFF Api key authorization
 .WithTags("Users");
 
 app.Run();

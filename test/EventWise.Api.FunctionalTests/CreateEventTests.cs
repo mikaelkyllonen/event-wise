@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace EventWise.Api.FunctionalTests;
@@ -17,7 +18,8 @@ public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTest
             10,
             DateTime.UtcNow.AddDays(1),
             DateTime.UtcNow.AddDays(2));
-        HttpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsInN1YiI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsImp0aSI6IjYyNzE3YTUiLCJyb2xlIjoidXNlciIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMDEiLCJuYmYiOjE3MzU0OTM2MTMsImV4cCI6MTc0MzI2OTYxMywiaWF0IjoxNzM1NDkzNjEzLCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.QNwMK8_KbspF_IhD-VY2OFrgLB6C6BavF9xMLccIhQU");
+
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken());
 
         // Act
         var response = await HttpClient.PostAsJsonAsync("events", request);

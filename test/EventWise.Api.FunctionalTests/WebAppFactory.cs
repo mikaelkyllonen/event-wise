@@ -48,16 +48,16 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncDispos
             );
 
             // Add test jwt authentication
-            services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+            services.Configure<Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
-                options.ValidAudiences = ["test"];
-                options.ValidIssuers = ["test"];
+                options.Configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration
+                {
+                    Issuer = "test",
+                };
 
-                SigningKeys[] keys =
-                [
-                    new SigningKeys { Value = "6011F845-CB2C-451E-A772-4150CD901706" }
-                ];
-                options.SigningKeys = keys;
+                options.TokenValidationParameters.ValidIssuer = "test";
+                options.TokenValidationParameters.ValidAudience = "test";
+                options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("6011F845-CB2C-451E-A772-4150CD901706"));
             });
         });
     }
@@ -76,9 +76,12 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncDispos
     private async Task InitializeTestUserAsync()
     {
         var client = CreateClient();
-        client.DefaultRequestHeaders.Add("Authorization", $"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsInN1YiI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsImp0aSI6IjYyNzE3YTUiLCJyb2xlIjoidXNlciIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMDEiLCJuYmYiOjE3MzU0OTM2MTMsImV4cCI6MTc0MzI2OTYxMywiaWF0IjoxNzM1NDkzNjEzLCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.QNwMK8_KbspF_IhD-VY2OFrgLB6C6BavF9xMLccIhQU");
+        var token = JwtTokenGenerator.GenerateToken();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+        //client.DefaultRequestHeaders.Add("Authorization", $"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsInN1YiI6IkZCRDE0RTEwLUI2QkEtNDRBMS04MjE4LUNCODM3NEYzOUQ1OCIsImp0aSI6IjYyNzE3YTUiLCJyb2xlIjoidXNlciIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjcxMDEiLCJuYmYiOjE3MzU0OTM2MTMsImV4cCI6MTc0MzI2OTYxMywiaWF0IjoxNzM1NDkzNjEzLCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIn0.QNwMK8_KbspF_IhD-VY2OFrgLB6C6BavF9xMLccIhQU");
 
-        await client.PostAsJsonAsync("users", new { Id = "FBD14E10-B6BA-44A1-8218-CB8374F39D58", FirstName = "Test", LastName = "User", Email = "test@localhost" });
+        var res = await client.PostAsJsonAsync("users", new { Id = "FBD14E10-B6BA-44A1-8218-CB8374F39D58", FirstName = "Test", LastName = "User", Email = "test@localhost" });
+        res.EnsureSuccessStatusCode();
     }
 }
 
@@ -89,7 +92,7 @@ public static class JwtTokenGenerator
         var token = new JwtSecurityToken(
             issuer: "test",
             audience: "test",
-            claims: [new Claim(ClaimTypes.Role, "user")],
+            claims: [new Claim(ClaimTypes.NameIdentifier, "FBD14E10-B6BA-44A1-8218-CB8374F39D58"), new Claim(ClaimTypes.Role, "user")],
             expires: DateTime.UtcNow.AddMinutes(30),
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes("6011F845-CB2C-451E-A772-4150CD901706")),
