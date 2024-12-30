@@ -23,6 +23,8 @@ public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTest
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
 
         // Assert
+        var responseContent = await response.Content.ReadAsStringAsync();
+        Assert.Equal("", responseContent);
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
@@ -42,6 +44,8 @@ public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTest
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
 
         // Assert
+        var responseContent = await response.Content.ReadAsStringAsync();
+        Assert.Equal("", responseContent);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }
