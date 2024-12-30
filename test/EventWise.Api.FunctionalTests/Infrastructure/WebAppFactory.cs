@@ -64,7 +64,7 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
         //using var scope = Services.CreateScope();
         //var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         //await dbContext.Database.EnsureCreatedAsync();
-        
+
         //await dbContext.Database.MigrateAsync();
 
         await InitializeTestUserAsync();

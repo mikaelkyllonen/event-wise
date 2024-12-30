@@ -48,7 +48,7 @@ public sealed class CreateEventTests(WebAppFactory factory, ITestOutputHelper ou
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
         var responseContent = await response.Content.ReadAsStringAsync();
         _output.WriteLine(responseContent);
-        
+
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }

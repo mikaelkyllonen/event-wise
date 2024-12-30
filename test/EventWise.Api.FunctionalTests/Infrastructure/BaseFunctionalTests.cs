@@ -13,7 +13,7 @@ public abstract class BaseFunctionalTests(WebAppFactory factory) : IClassFixture
         {
             var client = factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken());
-       
+
             return client;
         }
     }

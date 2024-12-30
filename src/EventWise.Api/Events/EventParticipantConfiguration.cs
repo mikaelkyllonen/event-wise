@@ -17,6 +17,6 @@ public sealed class EventParticipantConfiguration : IEntityTypeConfiguration<Eve
         builder.HasOne(ep => ep.Participant)
             .WithMany()
             .HasForeignKey(ep => ep.ParticipantId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
