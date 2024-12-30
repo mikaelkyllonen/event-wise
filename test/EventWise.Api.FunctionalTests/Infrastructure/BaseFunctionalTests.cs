@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Headers;
 
-namespace EventWise.Api.FunctionalTests.Infrastructure;
+using EventWise.Api.FunctionalTests.Infrastructure;
+
+namespace EventWise.Api.FunctionalTests;
 
 public abstract class BaseFunctionalTests(WebAppFactory factory) : IClassFixture<WebAppFactory>
 {
@@ -11,7 +13,7 @@ public abstract class BaseFunctionalTests(WebAppFactory factory) : IClassFixture
         {
             var client = factory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken());
-
+       
             return client;
         }
     }
