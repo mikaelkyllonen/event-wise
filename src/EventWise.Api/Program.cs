@@ -49,13 +49,10 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
-    {
-        var userId = userContext.UserId();
         await dbContext.Events
         .AsNoTracking()
         .Where(e => e.EventState == EventState.Published)
-        .ToListAsync(ct);
-    })
+        .ToListAsync(ct))
 .WithTags("Events");
 
 app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>

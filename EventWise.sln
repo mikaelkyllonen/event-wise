@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api", "src\EventW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api.UnitTests", "test\EventWise.Api.UnitTests\EventWise.Api.UnitTests.csproj", "{0EF5DF51-9CB6-4AD2-9C6D-29C4EE55208F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api.FunctionalTests", "test\EventWise.Api.FunctionalTests\EventWise.Api.FunctionalTests.csproj", "{22E1F50F-539E-48BA-AF81-8FD1C3D2699F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api.FunctionalTests", "test\EventWise.Api.FunctionalTests\EventWise.Api.FunctionalTests.csproj", "{19A7589B-5238-40B0-87EF-D8595B752B04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{0EF5DF51-9CB6-4AD2-9C6D-29C4EE55208F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EF5DF51-9CB6-4AD2-9C6D-29C4EE55208F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EF5DF51-9CB6-4AD2-9C6D-29C4EE55208F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22E1F50F-539E-48BA-AF81-8FD1C3D2699F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22E1F50F-539E-48BA-AF81-8FD1C3D2699F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22E1F50F-539E-48BA-AF81-8FD1C3D2699F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22E1F50F-539E-48BA-AF81-8FD1C3D2699F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19A7589B-5238-40B0-87EF-D8595B752B04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19A7589B-5238-40B0-87EF-D8595B752B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19A7589B-5238-40B0-87EF-D8595B752B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19A7589B-5238-40B0-87EF-D8595B752B04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
