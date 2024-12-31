@@ -10,7 +10,7 @@ public sealed class GetEventsTests(WebAppFactory factory) : BaseFunctionalTests(
     {
         // Act
         var response = await UserClient.GetAsync("events");
-     
+
         // Assert
         var result = await response.Content.ReadFromJsonAsync<GetEventsResponse>();
         Assert.NotNull(result);
@@ -32,7 +32,7 @@ public sealed class GetEventsTests(WebAppFactory factory) : BaseFunctionalTests(
 
         // Act
         var response = await UserClient.GetAsync("events");
-        
+
         // Assert
         var result = await response.Content.ReadFromJsonAsync<GetEventsResponse>();
         Assert.NotNull(result);

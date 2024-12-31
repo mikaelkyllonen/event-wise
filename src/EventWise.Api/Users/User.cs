@@ -1,6 +1,6 @@
 ﻿using EventWise.Api.Common;
 
-namespace EventWise.Api.Events;
+namespace EventWise.Api.Users;
 
 public sealed class User
 {

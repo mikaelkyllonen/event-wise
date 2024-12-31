@@ -1,6 +1,7 @@
 using EventWise.Api;
 using EventWise.Api.Events;
 using EventWise.Api.Extensions;
+using EventWise.Api.Users;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -124,8 +125,6 @@ app.MapPost("/users", async ([FromBody] RegisterUserRequest request, Application
 .WithTags("Users");
 
 app.Run();
-
-public sealed record RegisterUserRequest(Guid Id, string FirstName, string LastName, string Email);
 
 public sealed record CreateEventRequest(
     string Name,

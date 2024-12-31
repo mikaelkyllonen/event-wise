@@ -1,4 +1,6 @@
-﻿namespace EventWise.Api.FunctionalTests;
+﻿using EventWise.Api.Users;
+
+namespace EventWise.Api.FunctionalTests;
 
 public static class UserData
 {
