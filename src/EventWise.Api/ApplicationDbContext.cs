@@ -1,6 +1,7 @@
 ﻿namespace EventWise.Api;
 
 using EventWise.Api.Events;
+using EventWise.Api.Users;
 
 using Microsoft.EntityFrameworkCore;
 

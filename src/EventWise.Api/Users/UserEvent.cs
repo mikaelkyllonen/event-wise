@@ -1,6 +1,7 @@
 ﻿using EventWise.Api.Common;
+using EventWise.Api.Events;
 
-namespace EventWise.Api.Events;
+namespace EventWise.Api.Users;
 
 public sealed class UserEvent : BaseEvent
 {

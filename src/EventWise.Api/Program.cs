@@ -1,6 +1,7 @@
 using EventWise.Api;
 using EventWise.Api.Events;
 using EventWise.Api.Extensions;
+using EventWise.Api.Users;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,10 +49,15 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
-        await dbContext.Events
+{
+    var events = await dbContext.Events
         .AsNoTracking()
-        .Where(e => e.EventState == EventState.Published)
-        .ToListAsync(ct))
+        .Where(e => e.EventState == EventState.Published && !(e is UserEvent))
+        .Select(e => new EventResponse(e.Name, e.Description, e.Location, e.StartTimeUtc, e.EndTimeUtc))
+        .ToListAsync(ct);
+
+    return Results.Ok(new GetEventsResponse(events));
+})
 .WithTags("Events");
 
 app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
@@ -120,8 +126,6 @@ app.MapPost("/users", async ([FromBody] RegisterUserRequest request, Application
 
 app.Run();
 
-public sealed record RegisterUserRequest(Guid Id, string FirstName, string LastName, string Email);
-
 public sealed record CreateEventRequest(
     string Name,
     string Description,
@@ -141,5 +145,13 @@ public sealed record GetEventResponse(
     DateTime StartTime,
     DateTime? EndTime,
     DateTime CreatedAtUtc);
+
+public sealed record GetEventsResponse(List<EventResponse> Events);
+public sealed record EventResponse(
+    string Name,
+    string Description,
+    string Location,
+    DateTime StartTimeUtc,
+    DateTime? EndTimeUtc);
 
 public partial class Program;
