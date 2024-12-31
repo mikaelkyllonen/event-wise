@@ -51,7 +51,7 @@ app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbCon
 {
     var events = await dbContext.Events
         .AsNoTracking()
-        .Where(e => e.EventState == EventState.Published)
+        .Where(e => e.EventState == EventState.Published && !(e is UserEvent))
         .Select(e => new EventResponse(e.Name, e.Description, e.Location, e.StartTimeUtc, e.EndTimeUtc))
         .ToListAsync(ct);
 

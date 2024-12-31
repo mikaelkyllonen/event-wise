@@ -13,6 +13,29 @@ public sealed class GetEventsTests(WebAppFactory factory) : BaseFunctionalTests(
      
         // Assert
         var result = await response.Content.ReadFromJsonAsync<GetEventsResponse>();
-        Assert.Empty(result!.Events);
+        Assert.NotNull(result);
+        Assert.Empty(result.Events);
+    }
+
+    [Fact]
+    public async Task Does_not_return_user_events()
+    {
+        // Arrange
+        var createEventRequest = new CreateEventRequest(
+            "Test Event",
+            "Test Description",
+            "Test Location",
+            10,
+            DateTime.UtcNow.AddDays(1),
+            DateTime.UtcNow.AddDays(2));
+        await UserClient.PostAsJsonAsync("events", createEventRequest);
+
+        // Act
+        var response = await UserClient.GetAsync("events");
+        
+        // Assert
+        var result = await response.Content.ReadFromJsonAsync<GetEventsResponse>();
+        Assert.NotNull(result);
+        Assert.Empty(result.Events);
     }
 }
