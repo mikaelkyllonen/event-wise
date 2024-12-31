@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api.UnitTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api.FunctionalTests", "test\EventWise.Api.FunctionalTests\EventWise.Api.FunctionalTests.csproj", "{19A7589B-5238-40B0-87EF-D8595B752B04}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A221A666-960C-4B62-B189-75A417E5C6D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CEC0B11B-6DF3-4D92-ADB2-72FF7F734E60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{053692FB-EDB1-4AF1-8019-C67592DB0710} = {A221A666-960C-4B62-B189-75A417E5C6D7}
+		{0EF5DF51-9CB6-4AD2-9C6D-29C4EE55208F} = {CEC0B11B-6DF3-4D92-ADB2-72FF7F734E60}
+		{19A7589B-5238-40B0-87EF-D8595B752B04} = {CEC0B11B-6DF3-4D92-ADB2-72FF7F734E60}
 	EndGlobalSection
 EndGlobal

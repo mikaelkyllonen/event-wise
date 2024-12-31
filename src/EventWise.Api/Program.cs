@@ -37,7 +37,6 @@ if (app.Environment.IsDevelopment())
     using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
     await dbContext.Database.EnsureCreatedAsync();
-    //await dbContext.Database.MigrateAsync();
 }
 
 app.UseAuthentication();

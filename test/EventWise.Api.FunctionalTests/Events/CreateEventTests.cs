@@ -3,14 +3,10 @@ using System.Net.Http.Json;
 
 using EventWise.Api.FunctionalTests.Infrastructure;
 
-using Xunit.Abstractions;
-
 namespace EventWise.Api.FunctionalTests.Events;
 
-public sealed class CreateEventTests(WebAppFactory factory, ITestOutputHelper output) : BaseFunctionalTests(factory)
+public sealed class CreateEventTests(WebAppFactory factory) : BaseFunctionalTests(factory)
 {
-    private readonly ITestOutputHelper _output = output;
-
     [Fact]
     public async Task CreateEvent_WithValidData_ReturnsCreated()
     {
@@ -25,29 +21,27 @@ public sealed class CreateEventTests(WebAppFactory factory, ITestOutputHelper ou
 
         // Act
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine(responseContent);
 
         // Assert
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
+    // TODO: Add validation errors
     [Fact]
     public async Task CreateEvent_WithInvalidData_ReturnsBadRequest()
     {
         // Arrange
+        var invalidStartTime = DateTime.UtcNow.AddDays(-1);
         var createEventRequest = new CreateEventRequest(
             "Test Event",
             "Test Description",
             "Test Location",
             10,
-            DateTime.UtcNow.AddDays(1),
-            DateTime.UtcNow.AddDays(-1));
+            invalidStartTime,
+            default);
 
         // Act
         var response = await UserClient.PostAsJsonAsync("events", createEventRequest);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        _output.WriteLine(responseContent);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

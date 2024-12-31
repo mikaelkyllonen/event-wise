@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 using Testcontainers.MsSql;
 
 namespace EventWise.Api.FunctionalTests.Infrastructure;
 
-public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public sealed class WebAppFactory() : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly MsSqlContainer _dbContainer = new MsSqlBuilder()
             .Build();
@@ -38,11 +38,6 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 options.UseSqlServer(_dbContainer.GetConnectionString())
             );
 
-            //using var scope = Services.CreateScope();
-            //using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-            //dbContext.Database.Migrate();
-
             services.Configure<Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.Configuration = new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration
@@ -54,19 +49,14 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 options.TokenValidationParameters.ValidAudience = JwtTokenGenerator.Audience;
                 options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtTokenGenerator.SigningKey));
             });
+
+            services.AddLogging(builder => builder.AddDebug());
         });
     }
 
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
-
-        //using var scope = Services.CreateScope();
-        //var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        //await dbContext.Database.EnsureCreatedAsync();
-
-        //await dbContext.Database.MigrateAsync();
-
         await InitializeTestUserAsync();
     }
 
@@ -81,6 +71,6 @@ public sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken());
 
         var res = await client.PostAsJsonAsync("users", UserData.RegisterUserRequest);
-        //res.EnsureSuccessStatusCode();
+        res.EnsureSuccessStatusCode();
     }
 }
