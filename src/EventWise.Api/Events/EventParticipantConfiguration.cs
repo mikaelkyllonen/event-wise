@@ -11,10 +11,12 @@ public sealed class EventParticipantConfiguration : IEntityTypeConfiguration<Eve
 
         builder.HasOne(ep => ep.Event)
             .WithMany(e => e.Participants)
-            .HasForeignKey(ep => ep.EventId);
+            .HasForeignKey(ep => ep.EventId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(ep => ep.Participant)
             .WithMany()
-            .HasForeignKey(ep => ep.ParticipantId);
+            .HasForeignKey(ep => ep.ParticipantId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
