@@ -48,10 +48,15 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
-        await dbContext.Events
+{
+    var events = await dbContext.Events
         .AsNoTracking()
         .Where(e => e.EventState == EventState.Published)
-        .ToListAsync(ct))
+        .Select(e => new EventResponse(e.Name, e.Description, e.Location, e.StartTimeUtc, e.EndTimeUtc))
+        .ToListAsync(ct);
+
+    return Results.Ok(new GetEventsResponse(events));
+})
 .WithTags("Events");
 
 app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
@@ -141,5 +146,13 @@ public sealed record GetEventResponse(
     DateTime StartTime,
     DateTime? EndTime,
     DateTime CreatedAtUtc);
+
+public sealed record GetEventsResponse(List<EventResponse> Events);
+public sealed record EventResponse(
+    string Name,
+    string Description,
+    string Location,
+    DateTime StartTimeUtc,
+    DateTime? EndTimeUtc);
 
 public partial class Program;
