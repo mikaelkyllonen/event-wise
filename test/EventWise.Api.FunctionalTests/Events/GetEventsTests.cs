@@ -12,7 +12,10 @@ public sealed class GetEventsTests(WebAppFactory factory) : BaseFunctionalTests(
         var response = await UserClient.GetAsync("events");
      
         // Assert
-        var events = await response.Content.ReadFromJsonAsync<GetEventsResponse>();
-        Assert.Empty(events);
+        var result = await response.Content.ReadFromJsonAsync<GetEventsResponse>();
+        Assert.Empty(result.Events);
     }
 }
+
+public sealed record GetEventsResponse(Events[] Events);
+public sealed record Events();
