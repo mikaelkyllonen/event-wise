@@ -24,7 +24,7 @@ public static class EventErrors
     {
         public static readonly Error AlreadyParticipating = new(
             "Event.Participation.AlreadyParticipating",
-            "User is already participating in this event");
+            "Cannot join an event that you are already participating in");
 
         public static readonly Error EventFull = new(
             "Event.Participation.EventFull",
@@ -41,6 +41,14 @@ public static class EventErrors
         public static readonly Error HostCannotParticipate = new(
             "Event.Participation.HostCannotParticipate",
             "Host cannot join as a participant in their own event");
+
+        public static readonly Error NotParticipating = new(
+            "Event.Participation.NotParticipating",
+            "Cannot leave an event that you are not participating in");
+
+        public static readonly Error CannotLeaveFinishedEvent = new(
+            "Event.Participation.CannotLeaveFinished",
+            "Cannot leave an event that has completed or been canceled");
     }
 
     public static class State

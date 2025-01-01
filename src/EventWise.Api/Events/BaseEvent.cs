@@ -53,24 +53,38 @@ public abstract class BaseEvent(
         {
             return Result.Failure(EventErrors.Participation.AlreadyParticipating);
         }
-
+        if (HostId == user.Id)
+        {
+            return Result.Failure(EventErrors.Participation.HostCannotParticipate);
+        }
         if (EventState == EventState.Canceled)
         {
             return Result.Failure(EventErrors.Participation.EventCanceled);
         }
-
         if (EventState == EventState.Completed)
         {
             return Result.Failure(EventErrors.Participation.EventCompleted);
         }
 
-        if (HostId == user.Id)
-        {
-            return Result.Failure(EventErrors.Participation.HostCannotParticipate);
-        }
-
         var participant = EventParticipant.Create(Id, user.Id).Value;
         _participants.Add(participant);
+
+        return Result.Success();
+    }
+
+    public Result Leave(User user)
+    {
+        var participant = Participants.FirstOrDefault(p => p.ParticipantId == user.Id);
+        if (participant is null)
+        {
+            return Result.Failure(EventErrors.Participation.NotParticipating);
+        }
+        if (EventState == EventState.Completed || EventState == EventState.Canceled)
+        {
+            return Result.Failure(EventErrors.Participation.CannotLeaveFinishedEvent);
+        }
+
+        _participants.Remove(participant);
 
         return Result.Success();
     }
