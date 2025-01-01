@@ -1,4 +1,5 @@
 ﻿using EventWise.Api.Events;
+using EventWise.Api.Users;
 
 namespace EventWise.Api.UnitTests;
 
@@ -15,6 +16,22 @@ internal sealed class TestData
             DateTime.UtcNow.AddHours(1),
             null).Value;
 
+        UpdateEventState(eventState, @event);
+
+        return @event;
+    }
+
+    internal static BaseEvent CreateEventWithParticipant(User user, EventState state)
+    {
+        var @event = CreateEventWith(EventState.Published);
+        @event.Participate(user);
+        UpdateEventState(state, @event);
+
+        return @event;
+    }
+
+    private static void UpdateEventState(EventState eventState, BaseEvent @event)
+    {
         switch (eventState)
         {
             case EventState.Published:
@@ -32,7 +49,5 @@ internal sealed class TestData
             default:
                 throw new ArgumentException("Unknown event state", nameof(eventState));
         }
-
-        return @event;
     }
 }
