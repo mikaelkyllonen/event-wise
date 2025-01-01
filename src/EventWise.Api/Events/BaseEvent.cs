@@ -1,4 +1,5 @@
 ﻿using EventWise.Api.Common;
+using EventWise.Api.Users;
 
 namespace EventWise.Api.Events;
 
@@ -34,6 +35,34 @@ public abstract class BaseEvent(
         {
             return Result.Failure(EventErrors.StartTimeInPast);
         }
+
+        return Result.Success();
+    }
+
+    public virtual Result Participate(User user)
+    {
+        if (Participants.Any(p => p.ParticipantId == user.Id))
+        {
+            return Result.Failure(EventErrors.UserAlreadyParticipating);
+        }
+
+        if (EventState == EventState.Canceled)
+        {
+            return Result.Failure(EventErrors.EventCanceled);
+        }
+
+        if (EventState == EventState.Completed)
+        {
+            return Result.Failure(EventErrors.EventEnded);
+        }
+
+        if (HostId == user.Id)
+        {
+            return Result.Failure(EventErrors.HostCannotParticipate);
+        }
+
+        var participant = EventParticipant.Create(Id, user.Id).Value;
+        _participants.Add(participant);
 
         return Result.Success();
     }
