@@ -31,13 +31,13 @@ public sealed class UserTests()
         await Assert.That(result.Error).IsEqualTo(expectedError);
     }
 
-    public static IEnumerable<(string firstName, string lastName, string email, Error error)> IncompleteUserData()
+    public static IEnumerable<Func<(string firstName, string lastName, string email, Error error)>> IncompleteUserData()
     {
-        yield return new("", "user", "test@localhost.com", UserErrors.FirstNameRequired);
-        yield return new("   ", "user", "test@localhost.com", UserErrors.FirstNameRequired);
-        yield return new("test", "", "test@localhost.com", UserErrors.LastNameRequired);
-        yield return new("test", "   ", "test@localhost.com", UserErrors.LastNameRequired);
-        yield return new("test", "user", "", UserErrors.EmailRequired);
-        yield return new("test", "user", "   ", UserErrors.EmailRequired);
+        yield return () => ("", "user", "test@localhost.com", UserErrors.FirstNameRequired);
+        yield return () => ("   ", "user", "test@localhost.com", UserErrors.FirstNameRequired);
+        yield return () => ("test", "", "test@localhost.com", UserErrors.LastNameRequired);
+        yield return () => ("test", "   ", "test@localhost.com", UserErrors.LastNameRequired);
+        yield return () => ("test", "user", "", UserErrors.EmailRequired);
+        yield return () => ("test", "user", "   ", UserErrors.EmailRequired);
     }
 }
