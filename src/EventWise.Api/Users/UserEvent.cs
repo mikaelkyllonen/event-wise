@@ -56,4 +56,37 @@ public sealed class UserEvent : BaseEvent
         startTimeUtc,
         endTimeUtc);
     }
+
+    public Result Participate(User user)
+    {
+        if (Participants.Count >= MaxParticipants)
+        {
+            return Result.Failure(EventErrors.EventFull);
+        }
+
+        if (Participants.Any(p => p.ParticipantId == user.Id))
+        {
+            return Result.Failure(EventErrors.UserAlreadyParticipating);
+        }
+
+        if (EventState == EventState.Canceled)
+        {
+            return Result.Failure(EventErrors.EventCanceled);
+        }
+
+        if (EventState == EventState.Completed)
+        {
+            return Result.Failure(EventErrors.EventEnded);
+        }
+
+        if (HostId == user.Id)
+        {
+            return Result.Failure(EventErrors.HostCannotParticipate);
+        }
+
+        var participant = EventParticipant.Create(Id, user.Id).Value;
+        _participants.Add(participant);
+
+        return Result.Success();
+    }
 }

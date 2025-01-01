@@ -10,7 +10,7 @@ public abstract class BaseEvent(
     DateTime startTime,
     DateTime? endTime)
 {
-    private readonly List<EventParticipant> _participants = [];
+    protected readonly List<EventParticipant> _participants = [];
 
     public Guid Id { get; private set; } = Guid.CreateVersion7();
     public Guid HostId { get; private set; } = hostId;
@@ -34,6 +34,30 @@ public abstract class BaseEvent(
         {
             return Result.Failure(EventErrors.StartTimeInPast);
         }
+
+        return Result.Success();
+    }
+
+    public Result Cancel()
+    {
+        //if (EventState == EventState.Canceled)
+        //{
+        //    return Result.Failure(EventErrors.EventAlreadyCancelled);
+        //}
+
+        EventState = EventState.Canceled;
+
+        return Result.Success();
+    }
+
+    public Result Complete()
+    {
+        //if (EventState == EventState.Completed)
+        //{
+        //    return Result.Failure(EventErrors.EventAlreadyCompleted);
+        //}
+
+        EventState = EventState.Completed;
 
         return Result.Success();
     }
