@@ -5,6 +5,7 @@ using EventWise.Api.Users;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 
 using Scalar.AspNetCore;
 
@@ -26,6 +27,8 @@ builder.Services.AddScoped<UserContext>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddFeatureManagement();
 
 var app = builder.Build();
 
@@ -125,9 +128,10 @@ app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userCont
     }
 
     await dbContext.SaveChangesAsync(ct);
-    
+
     return Results.Ok();
 })
+.AddEndpointFilter<LeaveEventFeatureFilter>()
 .RequireAuthorization("User")
 .WithTags("Events");
 

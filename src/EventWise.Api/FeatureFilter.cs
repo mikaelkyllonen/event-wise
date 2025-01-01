@@ -11,9 +11,9 @@ public abstract class FeatureFilter(IFeatureManager featureManager) : IEndpointF
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var isEnabled = await _featureManager.IsEnabledAsync(FeatureFlag);
-        
-        return !isEnabled 
-            ? Results.NotFound() 
+
+        return !isEnabled
+            ? Results.NotFound()
             : await next(context);
     }
 }
