@@ -103,6 +103,34 @@ app.MapGet("/events/{id}", async (Guid id, ApplicationDbContext dbContext, Cance
 })
 .WithTags("Events");
 
+app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+{
+    var @event = await dbContext.Events.FindAsync([eventId], cancellationToken: ct);
+    if (@event is null)
+    {
+        return Results.NotFound();
+    }
+
+    var userId = userContext.UserId();
+    var user = await dbContext.Users.FindAsync([userId], cancellationToken: ct);
+    if (user is null)
+    {
+        return Results.NotFound();
+    }
+
+    var result = @event.Leave(user);
+    if (result.IsFailure)
+    {
+        return Results.BadRequest(result.Error);
+    }
+
+    await dbContext.SaveChangesAsync(ct);
+    
+    return Results.Ok();
+})
+.RequireAuthorization("User")
+.WithTags("Events");
+
 app.MapPost("/users", async ([FromBody] RegisterUserRequest request, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
     if (await dbContext.Users.AnyAsync(u => u.Id == request.Id || u.Email == request.Email, ct))
