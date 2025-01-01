@@ -26,6 +26,10 @@ public sealed class User
         {
             return Result.Failure<User>(UserErrors.EmailRequired);
         }
+        if (!email.Contains('@'))
+        {
+            return Result.Failure<User>(UserErrors.InvalidEmail);
+        }
 
         return new User
         {

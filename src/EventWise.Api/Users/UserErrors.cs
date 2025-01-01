@@ -15,4 +15,8 @@ public static class UserErrors
     public static readonly Error EmailRequired = new(
         "User.EmailRequired",
         "Email is required");
+
+    public static readonly Error InvalidEmail = new(
+        "User.InvalidEmail",
+        "Email is invalid");
 }
