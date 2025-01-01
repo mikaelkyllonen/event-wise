@@ -43,26 +43,46 @@ public abstract class BaseEvent(
     {
         if (Participants.Any(p => p.ParticipantId == user.Id))
         {
-            return Result.Failure(EventErrors.UserAlreadyParticipating);
+            return Result.Failure(EventErrors.Participation.AlreadyParticipating);
         }
 
         if (EventState == EventState.Canceled)
         {
-            return Result.Failure(EventErrors.EventCanceled);
+            return Result.Failure(EventErrors.Participation.EventCanceled);
         }
 
         if (EventState == EventState.Completed)
         {
-            return Result.Failure(EventErrors.EventEnded);
+            return Result.Failure(EventErrors.Participation.EventCompleted);
         }
 
         if (HostId == user.Id)
         {
-            return Result.Failure(EventErrors.HostCannotParticipate);
+            return Result.Failure(EventErrors.Participation.HostCannotParticipate);
         }
 
         var participant = EventParticipant.Create(Id, user.Id).Value;
         _participants.Add(participant);
+
+        return Result.Success();
+    }
+
+    public Result Start()
+    {
+        //if (EventState == EventState.Started)
+        //{
+        //    return Result.Failure(EventErrors.EventAlreadyStarted);
+        //}
+        //if (EventState == EventState.Canceled)
+        //{
+        //    return Result.Failure(EventErrors.EventCanceled);
+        //}
+        //if (EventState == EventState.Completed)
+        //{
+        //    return Result.Failure(EventErrors.EventEnded);
+        //}
+
+        EventState = EventState.InProgress;
 
         return Result.Success();
     }
@@ -72,6 +92,11 @@ public abstract class BaseEvent(
         //if (EventState == EventState.Canceled)
         //{
         //    return Result.Failure(EventErrors.EventAlreadyCancelled);
+        //}
+
+        //if (EventState == EventState.Completed)
+        //{
+        //    return Result.Failure(EventErrors.EventEnded);
         //}
 
         EventState = EventState.Canceled;
@@ -84,6 +109,11 @@ public abstract class BaseEvent(
         //if (EventState == EventState.Completed)
         //{
         //    return Result.Failure(EventErrors.EventAlreadyCompleted);
+        //}
+
+        //if (EventState == EventState.Canceled)
+        //{
+        //    return Result.Failure(EventErrors.EventCanceled);
         //}
 
         EventState = EventState.Completed;

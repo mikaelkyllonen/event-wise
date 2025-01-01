@@ -21,23 +21,26 @@ public static class EventErrors
         "Event.MaxParticipantsGreaterThanMax",
         $"Max participants cannot be greater than {UserEvent.MaxParticipantsForUserEvents}");
 
-    public static readonly Error EventFull = new(
-        "Event.EventFull",
-        "Event is full");
+    public static class Participation
+    {
+        public static readonly Error AlreadyParticipating = new(
+            "Event.Participation.AlreadyParticipating",
+            "User is already participating in this event");
 
-    public static readonly Error UserAlreadyParticipating = new(
-        "Event.AlreadyParticipating",
-        "User is already participating in the event");
+        public static readonly Error EventFull = new(
+            "Event.Participation.EventFull",
+            "Cannot join a full event");
 
-    public static readonly Error EventCanceled = new(
-        "Event.Canceled",
-        "Cannot participate in a canceled event");
+        public static readonly Error EventCanceled = new(
+            "Event.Participation.EventCanceled",
+            "Cannot join a canceled event");
 
-    public static readonly Error EventEnded = new(
-        "Event.Ended",
-        "Cannot participate in an event that has ended");
+        public static readonly Error EventCompleted = new(
+            "Event.Participation.EventCompleted",
+            "Cannot join a completed event");
 
-    public static readonly Error HostCannotParticipate = new(
-        "Event.HostCannotParticipate",
-        "Host cannot join as a participant in their own event");
+        public static readonly Error HostCannotParticipate = new(
+            "Event.Participation.HostCannotParticipate",
+            "Host cannot join as a participant in their own event");
+    }
 }

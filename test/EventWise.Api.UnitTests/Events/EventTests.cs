@@ -134,7 +134,7 @@ public sealed class EventTests
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
-        await Assert.That(result.Error).IsEqualTo(EventErrors.EventFull);
+        await Assert.That(result.Error).IsEqualTo(EventErrors.Participation.EventFull);
     }
 
     [Test]
@@ -183,7 +183,7 @@ public sealed class EventTests
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
-        await Assert.That(result.Error).IsEqualTo(EventErrors.EventCanceled);
+        await Assert.That(result.Error).IsEqualTo(EventErrors.Participation.EventCanceled);
     }
 
     [Test]
@@ -207,7 +207,7 @@ public sealed class EventTests
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
-        await Assert.That(result.Error).IsEqualTo(EventErrors.EventEnded);
+        await Assert.That(result.Error).IsEqualTo(EventErrors.Participation.EventCompleted);
     }
 
     [Test]
@@ -230,6 +230,6 @@ public sealed class EventTests
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
-        await Assert.That(result.Error).IsEqualTo(EventErrors.HostCannotParticipate);
+        await Assert.That(result.Error).IsEqualTo(EventErrors.Participation.HostCannotParticipate);
     }
 }

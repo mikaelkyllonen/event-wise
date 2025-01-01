@@ -61,7 +61,7 @@ public sealed class UserEvent : BaseEvent
     {
         if (Participants.Count >= MaxParticipants)
         {
-            return Result.Failure(EventErrors.EventFull);
+            return Result.Failure(EventErrors.Participation.EventFull);
         }
 
         return base.Participate(user);
