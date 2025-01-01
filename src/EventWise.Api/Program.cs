@@ -105,7 +105,7 @@ app.MapGet("/events/{id}", async (Guid id, ApplicationDbContext dbContext, Cance
 
 app.MapPost("/users", async ([FromBody] RegisterUserRequest request, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
-    if (await dbContext.Users.AnyAsync(u => u.Id == request.Id, ct))
+    if (await dbContext.Users.AnyAsync(u => u.Id == request.Id || u.Email == request.Email, ct))
     {
         return Results.Conflict();
     }
