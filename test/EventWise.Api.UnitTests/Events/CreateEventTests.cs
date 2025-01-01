@@ -1,5 +1,4 @@
 ﻿using EventWise.Api.Events;
-using EventWise.Api.Users;
 
 namespace EventWise.Api.UnitTests.Events;
 

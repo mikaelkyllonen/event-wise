@@ -82,16 +82,7 @@ public sealed class ParticipateEventTests
     {
         // Arrange
         var user = User.Create(Guid.NewGuid(), "User", "Test", "test@localhost.com").Value;
-        var userEvent = UserEvent.Create(
-            Guid.NewGuid(),
-            "Event",
-            "Description",
-            "Location",
-            1,
-            DateTime.UtcNow.AddHours(1),
-            null).Value;
-
-        userEvent.Cancel();
+        var userEvent = TestData.CreateEventWith(EventState.Canceled);
 
         // Act
         var result = userEvent.Participate(user);
@@ -106,16 +97,7 @@ public sealed class ParticipateEventTests
     {
         // Arrange
         var user = User.Create(Guid.NewGuid(), "User", "Test", "test@localhost.com").Value;
-        var userEvent = UserEvent.Create(
-            Guid.NewGuid(),
-            "Event",
-            "Description",
-            "Location",
-            1,
-            DateTime.UtcNow.AddHours(1),
-            null).Value;
-
-        userEvent.Complete();
+        var userEvent = TestData.CreateEventWith(EventState.Completed);
 
         // Act
         var result = userEvent.Participate(user);

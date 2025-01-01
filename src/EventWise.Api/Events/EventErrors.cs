@@ -1,5 +1,4 @@
 ﻿using EventWise.Api.Common;
-using EventWise.Api.Users;
 
 namespace EventWise.Api.Events;
 
@@ -42,5 +41,24 @@ public static class EventErrors
         public static readonly Error HostCannotParticipate = new(
             "Event.Participation.HostCannotParticipate",
             "Host cannot join as a participant in their own event");
+    }
+
+    public static class State
+    {
+        public static readonly Error CannotPublish = new(
+            "Event.State.CannotPublish",
+            "Event cannot be published in its current state");
+
+        public static readonly Error CannotStart = new(
+            "Event.State.CannotStart",
+            "Event cannot be started in its current state");
+
+        public static readonly Error CannotCancel = new(
+            "Event.State.CannotCancel",
+            "Event cannot be canceled in its current state");
+
+        public static readonly Error CannotComplete = new(
+            "Event.State.CannotComplete",
+            "Event cannot be completed in its current state");
     }
 }

@@ -11,6 +11,14 @@ public abstract class BaseEvent(
     DateTime startTime,
     DateTime? endTime)
 {
+    private static readonly Dictionary<EventState, HashSet<EventState>> AllowedStateTransitions = new()
+    {
+        { EventState.Published, new() { EventState.InProgress, EventState.Canceled } },
+        { EventState.InProgress, new() { EventState.Completed, EventState.Canceled } },
+        { EventState.Completed, new() },
+        { EventState.Canceled, new() }
+    };
+
     protected readonly List<EventParticipant> _participants = [];
 
     public Guid Id { get; private set; } = Guid.CreateVersion7();
@@ -69,18 +77,11 @@ public abstract class BaseEvent(
 
     public Result Start()
     {
-        //if (EventState == EventState.Started)
-        //{
-        //    return Result.Failure(EventErrors.EventAlreadyStarted);
-        //}
-        //if (EventState == EventState.Canceled)
-        //{
-        //    return Result.Failure(EventErrors.EventCanceled);
-        //}
-        //if (EventState == EventState.Completed)
-        //{
-        //    return Result.Failure(EventErrors.EventEnded);
-        //}
+        var result = ValidateStateTransitionTo(EventState.InProgress);
+        if (result.IsFailure)
+        {
+            return result;
+        }
 
         EventState = EventState.InProgress;
 
@@ -89,15 +90,11 @@ public abstract class BaseEvent(
 
     public Result Cancel()
     {
-        //if (EventState == EventState.Canceled)
-        //{
-        //    return Result.Failure(EventErrors.EventAlreadyCancelled);
-        //}
-
-        //if (EventState == EventState.Completed)
-        //{
-        //    return Result.Failure(EventErrors.EventEnded);
-        //}
+        var result = ValidateStateTransitionTo(EventState.Canceled);
+        if (result.IsFailure)
+        {
+            return result;
+        }
 
         EventState = EventState.Canceled;
 
@@ -106,17 +103,30 @@ public abstract class BaseEvent(
 
     public Result Complete()
     {
-        //if (EventState == EventState.Completed)
-        //{
-        //    return Result.Failure(EventErrors.EventAlreadyCompleted);
-        //}
-
-        //if (EventState == EventState.Canceled)
-        //{
-        //    return Result.Failure(EventErrors.EventCanceled);
-        //}
+        var result = ValidateStateTransitionTo(EventState.Completed);
+        if (result.IsFailure)
+        {
+            return result;
+        }
 
         EventState = EventState.Completed;
+
+        return Result.Success();
+    }
+
+    private Result ValidateStateTransitionTo(EventState newState)
+    {
+        if (!AllowedStateTransitions[EventState].Contains(newState))
+        {
+            return Result.Failure(newState switch
+            {
+                EventState.Published => EventErrors.State.CannotPublish,
+                EventState.InProgress => EventErrors.State.CannotStart,
+                EventState.Completed => EventErrors.State.CannotComplete,
+                EventState.Canceled => EventErrors.State.CannotCancel,
+                _ => throw new ArgumentException("Unknown event state", nameof(newState))
+            });
+        }
 
         return Result.Success();
     }
