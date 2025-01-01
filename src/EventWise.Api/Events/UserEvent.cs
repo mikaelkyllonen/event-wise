@@ -1,7 +1,7 @@
 ﻿using EventWise.Api.Common;
-using EventWise.Api.Events;
+using EventWise.Api.Users;
 
-namespace EventWise.Api.Users;
+namespace EventWise.Api.Events;
 
 public sealed class UserEvent : BaseEvent
 {
@@ -55,5 +55,15 @@ public sealed class UserEvent : BaseEvent
         maxParticipants,
         startTimeUtc,
         endTimeUtc);
+    }
+
+    public override Result Participate(User user)
+    {
+        if (Participants.Count >= MaxParticipants)
+        {
+            return Result.Failure(EventErrors.Participation.EventFull);
+        }
+
+        return base.Participate(user);
     }
 }

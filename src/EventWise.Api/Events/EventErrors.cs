@@ -1,5 +1,4 @@
 ﻿using EventWise.Api.Common;
-using EventWise.Api.Users;
 
 namespace EventWise.Api.Events;
 
@@ -20,4 +19,46 @@ public static class EventErrors
     public static readonly Error MaxParticipantsGreaterThanMax = new(
         "Event.MaxParticipantsGreaterThanMax",
         $"Max participants cannot be greater than {UserEvent.MaxParticipantsForUserEvents}");
+
+    public static class Participation
+    {
+        public static readonly Error AlreadyParticipating = new(
+            "Event.Participation.AlreadyParticipating",
+            "User is already participating in this event");
+
+        public static readonly Error EventFull = new(
+            "Event.Participation.EventFull",
+            "Cannot join a full event");
+
+        public static readonly Error EventCanceled = new(
+            "Event.Participation.EventCanceled",
+            "Cannot join a canceled event");
+
+        public static readonly Error EventCompleted = new(
+            "Event.Participation.EventCompleted",
+            "Cannot join a completed event");
+
+        public static readonly Error HostCannotParticipate = new(
+            "Event.Participation.HostCannotParticipate",
+            "Host cannot join as a participant in their own event");
+    }
+
+    public static class State
+    {
+        public static readonly Error CannotPublish = new(
+            "Event.State.CannotPublish",
+            "Event cannot be published in its current state");
+
+        public static readonly Error CannotStart = new(
+            "Event.State.CannotStart",
+            "Event cannot be started in its current state");
+
+        public static readonly Error CannotCancel = new(
+            "Event.State.CannotCancel",
+            "Event cannot be canceled in its current state");
+
+        public static readonly Error CannotComplete = new(
+            "Event.State.CannotComplete",
+            "Event cannot be completed in its current state");
+    }
 }

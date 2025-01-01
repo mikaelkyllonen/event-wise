@@ -1,9 +1,8 @@
 ﻿using EventWise.Api.Events;
-using EventWise.Api.Users;
 
 namespace EventWise.Api.UnitTests.Events;
 
-public sealed class EventTests
+public sealed class CreateEventTests
 {
     [Test]
     public async Task Cannot_create_event_in_the_past()
