@@ -135,11 +135,10 @@ app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userCont
 .RequireAuthorization("User")
 .WithTags("Events");
 
-app.MapPost("/events/{eventId}/participants", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+app.MapGet("/events/{eventId}/participants", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
     var @event = await dbContext.Events
-        .Include(e => e.Participants
-            .Select(p => p.ParticipantId))
+        .Include(e => e.Participants)
         .FirstOrDefaultAsync(e => e.Id == eventId, ct);
     if (@event is null)
     {
@@ -157,7 +156,7 @@ app.MapPost("/events/{eventId}/participants", async (Guid eventId, UserContext u
 
     return Results.Ok();
 })
-.AddEndpointFilter<JoinEventFeatureFilter>()
+//.AddEndpointFilter<JoinEventFeatureFilter>()
 .RequireAuthorization("User")
 .WithTags("Events");
 

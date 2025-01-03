@@ -49,7 +49,7 @@ public abstract class BaseEvent(
 
     public virtual Result Participate(Guid userId)
     {
-        if (Participants.Any(p => p.ParticipantId == userId.Id))
+        if (Participants.Any(p => p.ParticipantId == userId))
         {
             return Result.Failure(EventErrors.Participation.AlreadyParticipating);
         }
