@@ -24,7 +24,7 @@ internal sealed class TestData
     internal static BaseEvent CreateEventWithParticipant(User user, EventState state)
     {
         var @event = CreateEventWith(EventState.Published);
-        @event.Participate(user);
+        @event.Participate(user.Id);
         UpdateEventState(state, @event);
 
         return @event;
