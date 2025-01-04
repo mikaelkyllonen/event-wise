@@ -16,19 +16,21 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
     public async Task User_can_join_event()
     {
         // Arrange
+        var userId = await UserClient.CreateUser();
+        var eventId = await Client.CreateEvent(userId);
+
         // Create event
-        var createdResponse = await UserClient.PostAsJsonAsync("events", new CreateEventRequest("Test", "Test", "Location", 10, DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddHours(2)));
-        var eventId = await createdResponse.Content.ReadFromJsonAsync<CreateEventResponse>();
+        //var createdResponse = await UserClient.PostAsJsonAsync("events", new CreateEventRequest("Test", "Test", "Location", 10, DateTime.UtcNow.AddHours(1), DateTime.UtcNow.AddHours(2)));
+        //var eventId = await createdResponse.Content.ReadFromJsonAsync<CreateEventResponse>();
 
         // Create user
-        var userGuid = Guid.NewGuid();
-        var res = await UserClient.PostAsJsonAsync("users", new RegisterUserRequest(userGuid, "Test", "User", "test2@localhost.com"));
+        //var userGuid = Guid.NewGuid();
+        //var res = await UserClient.PostAsJsonAsync("users", new RegisterUserRequest(userGuid, "Test", "User", "test2@localhost.com"));
         //Assert.Equal(HttpStatusCode.OK, res.StatusCode);
-        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userGuid));
+        //Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userGuid));
 
         // Act
-        // Join event
-        var response = await Client.GetAsync($"events/{eventId.Id}/participants");
+        var response = await UserClient.GetAsync($"events/{eventId}/participants");
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
