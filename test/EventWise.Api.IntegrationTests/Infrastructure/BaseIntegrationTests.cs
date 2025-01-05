@@ -2,7 +2,7 @@
 
 namespace EventWise.Api.IntegrationTests.Infrastructure;
 
-internal class BaseIntegrationTests : IClassFixture<WebAppFactory>
+public class BaseIntegrationTests : IClassFixture<WebAppFactory>
 {
     private readonly IServiceScope _scope;
     protected ApplicationDbContext DbContext { get; init; }
