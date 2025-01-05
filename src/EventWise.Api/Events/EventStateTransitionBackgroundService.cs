@@ -1,12 +1,17 @@
 ﻿
+using EventWise.Api.Common;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace EventWise.Api.Events;
 
-public sealed class EventStateTransitionBackgroundService(IServiceProvider serviceProvider) : BackgroundService
+public sealed class EventStateTransitionBackgroundService(
+    IServiceProvider serviceProvider,
+    IDateTimeProvider dateTimeProvider) : BackgroundService
 {
     private readonly TimeSpan _checkInterval = TimeSpan.FromMinutes(1);
     private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -14,7 +19,7 @@ public sealed class EventStateTransitionBackgroundService(IServiceProvider servi
         {
             using var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var currentUtcTime = DateTime.UtcNow;
+            var currentUtcTime = _dateTimeProvider.UtcNow;
 
             await StartEvents(currentUtcTime, dbContext, stoppingToken);
             await CompleteEvents(currentUtcTime, dbContext, stoppingToken);

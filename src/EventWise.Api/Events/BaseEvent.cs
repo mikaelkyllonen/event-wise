@@ -1,5 +1,4 @@
 ﻿using EventWise.Api.Common;
-using EventWise.Api.Users;
 
 namespace EventWise.Api.Events;
 
