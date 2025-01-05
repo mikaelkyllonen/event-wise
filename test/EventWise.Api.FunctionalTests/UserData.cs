@@ -16,6 +16,22 @@ public static class UserData
 
 internal static class HttpHelper
 {
+    internal static async Task<HttpResponseMessage> SendRequestAsUserAsync(
+        this HttpClient client, 
+        HttpMethod method,
+        string url, 
+        Guid userId, 
+        object? content = null)
+    {
+        var request = new HttpRequestMessage(method, url)
+        {
+            Content = content != null ? JsonContent.Create(content) : null,
+            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
+        };
+
+        return await client.SendAsync(request);
+    }
+
     internal static async Task<Guid> CreateEventWithHostAsync(this HttpClient client, Guid hostId, int? maxParticipants = default)
     {
         var faker = new Faker();

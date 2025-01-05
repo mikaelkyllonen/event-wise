@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
 
 using EventWise.Api.FunctionalTests.Infrastructure;
 
@@ -13,16 +12,10 @@ public sealed class LeaveEventTests(WebAppFactory factory) : BaseFunctionalTests
         // Arrange
         var userId = await Client.CreateUserAsync();
         var eventId = await Client.CreateEventWithHostAsync(UserData.DefaultUserGuid);
-        await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{eventId}/participants", userId);
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Delete, $"events/{eventId}/participants", userId);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -36,13 +29,10 @@ public sealed class LeaveEventTests(WebAppFactory factory) : BaseFunctionalTests
         var eventId = await Client.CreateEventWithHostAsync(UserData.DefaultUserGuid);
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Delete, $"events/{eventId}/participants", userId);
 
         // Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
@@ -50,13 +40,10 @@ public sealed class LeaveEventTests(WebAppFactory factory) : BaseFunctionalTests
     {
         // Arrange
         var userId = await Client.CreateUserAsync();
-        
+
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"events/{Guid.NewGuid()}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
-     
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Delete, $"events/{Guid.NewGuid()}/participants", userId);
+
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -72,5 +59,19 @@ public sealed class LeaveEventTests(WebAppFactory factory) : BaseFunctionalTests
         
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Host_cannot_leave_event_their_own_event()
+    {
+        // Arrange
+        var userId = await Client.CreateUserAsync();
+        var eventId = await Client.CreateEventWithHostAsync(userId);
+     
+        // Act
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Delete, $"events/{eventId}/participants", userId);
+        
+        // Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }
