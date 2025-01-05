@@ -130,7 +130,6 @@ app.MapDelete("/events/{eventId}/participants", async (Guid eventId, UserContext
 
     return Results.Ok();
 })
-//.AddEndpointFilter<LeaveEventFeatureFilter>()
 .RequireAuthorization("User")
 .WithTags("Events");
 
