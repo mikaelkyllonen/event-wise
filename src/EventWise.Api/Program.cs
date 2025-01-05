@@ -30,6 +30,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddFeatureManagement();
 
+builder.Services.AddHostedService<EventStateTransitionBackgroundService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
