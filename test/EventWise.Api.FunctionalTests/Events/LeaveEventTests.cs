@@ -53,10 +53,10 @@ public sealed class LeaveEventTests(WebAppFactory factory) : BaseFunctionalTests
     {
         // Arrange
         var eventId = await Client.CreateEventWithHostAsync(UserData.DefaultUserGuid);
-     
+
         // Act
         var response = await Client.DeleteAsync($"events/{eventId}/participants");
-        
+
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -67,10 +67,10 @@ public sealed class LeaveEventTests(WebAppFactory factory) : BaseFunctionalTests
         // Arrange
         var userId = await Client.CreateUserAsync();
         var eventId = await Client.CreateEventWithHostAsync(userId);
-     
+
         // Act
         var response = await Client.SendRequestAsUserAsync(HttpMethod.Delete, $"events/{eventId}/participants", userId);
-        
+
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }

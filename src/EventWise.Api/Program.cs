@@ -112,7 +112,7 @@ app.MapDelete("/events/{eventId}/participants", async (Guid eventId, UserContext
     var @event = await dbContext.Events
         .Include(e => e.Participants
             .Where(p => p.ParticipantId == userId))
-        .FirstOrDefaultAsync(e => 
+        .FirstOrDefaultAsync(e =>
             e.Id == eventId &&
             e.Participants.Any(p => p.ParticipantId == userId), ct);
     if (@event is null)

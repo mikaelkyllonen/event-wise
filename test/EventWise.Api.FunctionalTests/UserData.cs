@@ -17,10 +17,10 @@ public static class UserData
 internal static class HttpHelper
 {
     internal static async Task<HttpResponseMessage> SendRequestAsUserAsync(
-        this HttpClient client, 
+        this HttpClient client,
         HttpMethod method,
-        string url, 
-        Guid userId, 
+        string url,
+        Guid userId,
         object? content = null)
     {
         var request = new HttpRequestMessage(method, url)
