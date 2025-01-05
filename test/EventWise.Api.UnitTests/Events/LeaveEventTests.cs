@@ -13,7 +13,7 @@ public sealed class LeaveEventTests
         var @event = TestData.CreateEventWithParticipant(user, EventState.Published);
 
         // Act
-        var result = @event.Leave(user);
+        var result = @event.Leave(user.Id);
 
         // Assert
         await Assert.That(result.IsSuccess).IsTrue();
@@ -28,7 +28,7 @@ public sealed class LeaveEventTests
         var @event = TestData.CreateEventWith(EventState.Published);
 
         // Act
-        var result = @event.Leave(user);
+        var result = @event.Leave(user.Id);
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
@@ -45,7 +45,7 @@ public sealed class LeaveEventTests
         var @event = TestData.CreateEventWithParticipant(user, eventState);
 
         // Act
-        var result = @event.Leave(user);
+        var result = @event.Leave(user.Id);
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();

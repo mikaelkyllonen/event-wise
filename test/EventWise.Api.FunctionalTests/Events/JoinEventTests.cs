@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
 
 using EventWise.Api.FunctionalTests.Infrastructure;
 
@@ -7,8 +6,6 @@ namespace EventWise.Api.FunctionalTests.Events;
 
 public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(factory)
 {
-    private readonly WebAppFactory _factory = factory;
-
     [Fact]
     public async Task User_can_join_event()
     {
@@ -17,10 +14,8 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
         var eventId = await Client.CreateEventWithHostAsync(UserData.DefaultUserGuid);
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{eventId}/participants", userId);
+
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -33,10 +28,8 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
         var userId = await Client.CreateUserAsync();
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{Guid.NewGuid()}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{Guid.NewGuid()}/participants", userId);
+
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -50,10 +43,7 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
         var eventId = await Client.CreateEventWithHostAsync(userId, maxParticipants: 1);
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{eventId}/participants", userId);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -65,16 +55,10 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
         // Arrange
         var userId = await Client.CreateUserAsync();
         var eventId = await Client.CreateEventWithHostAsync(userId);
-        await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{eventId}/participants", userId);
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{eventId}/participants", userId);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -83,8 +67,11 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
     [Fact]
     public async Task User_cannot_join_event_without_authentication()
     {
+        // Arrange
+        var eventId = await Client.CreateEventWithHostAsync(UserData.DefaultUserGuid);
+
         // Act
-        var response = await Client.PostAsync($"events/{Guid.NewGuid()}/participants", null);
+        var response = await Client.PostAsync($"events/{eventId}/participants", null);
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -98,10 +85,7 @@ public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(
         var eventId = await Client.CreateEventWithHostAsync(userId);
 
         // Act
-        var response = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"events/{eventId}/participants")
-        {
-            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
-        });
+        var response = await Client.SendRequestAsUserAsync(HttpMethod.Post, $"events/{eventId}/participants", userId);
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
