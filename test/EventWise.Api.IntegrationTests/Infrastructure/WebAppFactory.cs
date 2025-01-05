@@ -10,7 +10,7 @@ using Testcontainers.MsSql;
 
 namespace EventWise.Api.IntegrationTests.Infrastructure;
 
-internal sealed class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
+internal class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly MsSqlContainer _dbContainer = new MsSqlBuilder()
             .Build();
