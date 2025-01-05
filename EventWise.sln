@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A221A666-960
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CEC0B11B-6DF3-4D92-ADB2-72FF7F734E60}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventWise.Api.IntegrationTests", "test\EventWise.Api.IntegrationTests\EventWise.Api.IntegrationTests.csproj", "{B66E0EB0-71C8-4381-8B0D-91266B9DF48E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{19A7589B-5238-40B0-87EF-D8595B752B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19A7589B-5238-40B0-87EF-D8595B752B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19A7589B-5238-40B0-87EF-D8595B752B04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B66E0EB0-71C8-4381-8B0D-91266B9DF48E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B66E0EB0-71C8-4381-8B0D-91266B9DF48E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B66E0EB0-71C8-4381-8B0D-91266B9DF48E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B66E0EB0-71C8-4381-8B0D-91266B9DF48E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
