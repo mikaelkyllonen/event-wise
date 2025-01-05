@@ -57,13 +57,13 @@ public sealed class UserEvent : BaseEvent
         endTimeUtc);
     }
 
-    public override Result Participate(User user)
+    public override Result Participate(Guid userId)
     {
         if (Participants.Count >= MaxParticipants)
         {
             return Result.Failure(EventErrors.Participation.EventFull);
         }
 
-        return base.Participate(user);
+        return base.Participate(userId);
     }
 }

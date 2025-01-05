@@ -47,13 +47,13 @@ public abstract class BaseEvent(
         return Result.Success();
     }
 
-    public virtual Result Participate(User user)
+    public virtual Result Participate(Guid userId)
     {
-        if (Participants.Any(p => p.ParticipantId == user.Id))
+        if (Participants.Any(p => p.ParticipantId == userId))
         {
             return Result.Failure(EventErrors.Participation.AlreadyParticipating);
         }
-        if (HostId == user.Id)
+        if (HostId == userId)
         {
             return Result.Failure(EventErrors.Participation.HostCannotParticipate);
         }
@@ -66,7 +66,7 @@ public abstract class BaseEvent(
             return Result.Failure(EventErrors.Participation.EventCompleted);
         }
 
-        var participant = EventParticipant.Create(Id, user.Id).Value;
+        var participant = EventParticipant.Create(Id, userId).Value;
         _participants.Add(participant);
 
         return Result.Success();

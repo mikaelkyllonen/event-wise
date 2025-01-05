@@ -12,12 +12,12 @@ public static class JwtTokenGenerator
     public static string Audience { get; } = "test-audience";
     public static string SigningKey { get; } = Guid.NewGuid().ToString();
 
-    public static string GenerateToken()
+    public static string GenerateToken(Guid? subject = null)
     {
         var token = new JwtSecurityToken(
             issuer: Issuer,
             audience: Audience,
-            claims: [new Claim(ClaimTypes.NameIdentifier, UserData.UserGuid.ToString()), new Claim(ClaimTypes.Role, "user")],
+            claims: [new Claim(ClaimTypes.NameIdentifier, subject.HasValue ? subject.ToString()! : UserData.DefaultUserGuid.ToString()), new Claim(ClaimTypes.Role, "user")],
             expires: DateTime.UtcNow.AddMinutes(30),
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SigningKey)),

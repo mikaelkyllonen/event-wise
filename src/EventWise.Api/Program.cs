@@ -135,6 +135,30 @@ app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userCont
 .RequireAuthorization("User")
 .WithTags("Events");
 
+app.MapPost("/events/{eventId}/participants", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+{
+    var @event = await dbContext.Events
+        .Include(e => e.Participants)
+        .FirstOrDefaultAsync(e => e.Id == eventId, ct);
+    if (@event is null)
+    {
+        return Results.NotFound();
+    }
+
+    var userId = userContext.UserId();
+    var result = @event.Participate(userId);
+    if (result.IsFailure)
+    {
+        return Results.BadRequest(result.Error);
+    }
+
+    await dbContext.SaveChangesAsync(ct);
+
+    return Results.Ok();
+})
+.RequireAuthorization("User")
+.WithTags("Events");
+
 app.MapPost("/users", async ([FromBody] RegisterUserRequest request, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
     if (await dbContext.Users.AnyAsync(u => u.Id == request.Id || u.Email == request.Email, ct))
