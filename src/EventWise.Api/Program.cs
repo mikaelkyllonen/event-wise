@@ -106,22 +106,19 @@ app.MapGet("/events/{id}", async (Guid id, ApplicationDbContext dbContext, Cance
 })
 .WithTags("Events");
 
-app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+app.MapDelete("/events/{eventId}/participants", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
-    var @event = await dbContext.Events.FindAsync([eventId], cancellationToken: ct);
+    var userId = userContext.UserId();
+    var @event = await dbContext.Events
+        .Include(e => e.Participants
+            .Where(p => p.ParticipantId == userId))
+        .FirstOrDefaultAsync(e => e.Id == eventId, ct);
     if (@event is null)
     {
         return Results.NotFound();
     }
 
-    var userId = userContext.UserId();
-    var user = await dbContext.Users.FindAsync([userId], cancellationToken: ct);
-    if (user is null)
-    {
-        return Results.NotFound();
-    }
-
-    var result = @event.Leave(user);
+    var result = @event.Leave(userId);
     if (result.IsFailure)
     {
         return Results.BadRequest(result.Error);
@@ -131,7 +128,7 @@ app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userCont
 
     return Results.Ok();
 })
-.AddEndpointFilter<LeaveEventFeatureFilter>()
+//.AddEndpointFilter<LeaveEventFeatureFilter>()
 .RequireAuthorization("User")
 .WithTags("Events");
 

@@ -7,8 +7,6 @@ namespace EventWise.Api.FunctionalTests.Events;
 
 public sealed class JoinEventTests(WebAppFactory factory) : BaseFunctionalTests(factory)
 {
-    private readonly WebAppFactory _factory = factory;
-
     [Fact]
     public async Task User_can_join_event()
     {

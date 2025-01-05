@@ -72,9 +72,9 @@ public abstract class BaseEvent(
         return Result.Success();
     }
 
-    public Result Leave(User user)
+    public Result Leave(Guid userId)
     {
-        var participant = Participants.FirstOrDefault(p => p.ParticipantId == user.Id);
+        var participant = Participants.FirstOrDefault(p => p.ParticipantId == userId);
         if (participant is null)
         {
             return Result.Failure(EventErrors.Participation.NotParticipating);
