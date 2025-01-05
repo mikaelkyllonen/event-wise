@@ -21,7 +21,7 @@ public sealed class ParticipateEventTests
             null).Value;
 
         // Act
-        var result = userEvent.Participate(user);
+        var result = userEvent.Participate(user.Id);
 
         // Assert
         await Assert.That(result.IsSuccess).IsTrue();
@@ -42,10 +42,10 @@ public sealed class ParticipateEventTests
             DateTime.UtcNow.AddHours(1),
             null).Value;
 
-        userEvent.Participate(user);
+        userEvent.Participate(user.Id);
 
         // Act
-        var result = userEvent.Participate(user);
+        var result = userEvent.Participate(user.Id);
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
@@ -67,10 +67,10 @@ public sealed class ParticipateEventTests
             DateTime.UtcNow.AddHours(1),
             null).Value;
 
-        userEvent.Participate(user);
+        userEvent.Participate(user.Id);
 
         // Act
-        var result = userEvent.Participate(user);
+        var result = userEvent.Participate(user.Id);
 
         // Assert
         await Assert.That(userEvent.Participants.Count).IsEqualTo(1);
@@ -85,7 +85,7 @@ public sealed class ParticipateEventTests
         var userEvent = TestData.CreateEventWith(EventState.Canceled);
 
         // Act
-        var result = userEvent.Participate(user);
+        var result = userEvent.Participate(user.Id);
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
@@ -100,7 +100,7 @@ public sealed class ParticipateEventTests
         var userEvent = TestData.CreateEventWith(EventState.Completed);
 
         // Act
-        var result = userEvent.Participate(user);
+        var result = userEvent.Participate(user.Id);
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();
@@ -123,7 +123,7 @@ public sealed class ParticipateEventTests
             null).Value;
 
         // Act
-        var result = userEvent.Participate(host);
+        var result = userEvent.Participate(host.Id);
 
         // Assert
         await Assert.That(result.IsFailure).IsTrue();

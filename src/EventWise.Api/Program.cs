@@ -135,7 +135,7 @@ app.MapPost("/events/{eventId}/leave", async (Guid eventId, UserContext userCont
 .RequireAuthorization("User")
 .WithTags("Events");
 
-app.MapGet("/events/{eventId}/participants", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+app.MapPost("/events/{eventId}/participants", async (Guid eventId, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
 {
     var @event = await dbContext.Events
         .Include(e => e.Participants)
@@ -156,7 +156,6 @@ app.MapGet("/events/{eventId}/participants", async (Guid eventId, UserContext us
 
     return Results.Ok();
 })
-//.AddEndpointFilter<JoinEventFeatureFilter>()
 .RequireAuthorization("User")
 .WithTags("Events");
 

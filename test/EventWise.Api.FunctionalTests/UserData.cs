@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 using Bogus;
 
@@ -8,26 +9,30 @@ namespace EventWise.Api.FunctionalTests;
 
 public static class UserData
 {
-    public static Guid UserGuid { get; } = Guid.NewGuid();
+    public static Guid DefaultUserGuid { get; } = Guid.NewGuid();
 
-    public static RegisterUserRequest RegisterUserRequest => new(UserGuid, "Test", "User", "test@localhost.com");
+    public static RegisterUserRequest RegisterUserRequest => new(DefaultUserGuid, "Test", "User", "test@localhost.com");
 }
 
 internal static class HttpHelper
 {
-    internal static async Task<Guid> CreateEvent(this HttpClient client, Guid hostId)
+    internal static async Task<Guid> CreateEventWithHostAsync(this HttpClient client, Guid hostId, int? maxParticipants = default)
     {
         var faker = new Faker();
         var request = new CreateEventRequest(
             faker.Random.String(10),
             faker.Random.String(20),
             faker.Locale,
-            faker.Random.Int(2, 10),
+            maxParticipants ?? faker.Random.Int(2, 10),
             faker.Date.Soon(),
-            faker.Date.Soon(days: 2));
+            faker.Date.Future());
 
-        client.DefaultRequestHeaders.Authorization = new("Bearer", JwtTokenGenerator.GenerateToken(hostId));
-        var response = await client.PostAsJsonAsync("events", request);
+        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "events")
+        {
+            Content = JsonContent.Create(request),
+            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(hostId)) }
+        });
+
         if (!response.IsSuccessStatusCode)
         {
             throw new InvalidOperationException($"Failed to create event: {await response.Content.ReadAsStringAsync()}");
@@ -38,7 +43,7 @@ internal static class HttpHelper
         return content!.Id;
     }
 
-    internal static async Task<Guid> CreateUser(this HttpClient client)
+    internal static async Task<Guid> CreateUserAsync(this HttpClient client)
     {
         var faker = new Faker();
         var userId = Guid.NewGuid();
@@ -48,8 +53,13 @@ internal static class HttpHelper
             faker.Person.LastName,
             faker.Person.Email);
 
-        var response = await client.PostAsJsonAsync("users", request);
-        if (!response.IsSuccessStatusCode) 
+        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, "users")
+        {
+            Content = JsonContent.Create(request),
+            Headers = { Authorization = new AuthenticationHeaderValue("Bearer", JwtTokenGenerator.GenerateToken(userId)) }
+        });
+
+        if (!response.IsSuccessStatusCode)
         {
             throw new InvalidOperationException($"Failed to create user: {await response.Content.ReadAsStringAsync()}");
         }

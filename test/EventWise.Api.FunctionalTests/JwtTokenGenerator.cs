@@ -17,7 +17,7 @@ public static class JwtTokenGenerator
         var token = new JwtSecurityToken(
             issuer: Issuer,
             audience: Audience,
-            claims: [new Claim(ClaimTypes.NameIdentifier, subject.HasValue ? subject.ToString()! : UserData.UserGuid.ToString()), new Claim(ClaimTypes.Role, "user")],
+            claims: [new Claim(ClaimTypes.NameIdentifier, subject.HasValue ? subject.ToString()! : UserData.DefaultUserGuid.ToString()), new Claim(ClaimTypes.Role, "user")],
             expires: DateTime.UtcNow.AddMinutes(30),
             signingCredentials: new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SigningKey)),
