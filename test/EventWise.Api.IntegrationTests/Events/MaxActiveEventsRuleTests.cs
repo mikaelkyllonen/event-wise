@@ -54,12 +54,12 @@ public sealed class MaxActiveEventsRuleTests(WebAppFactory factory) : BaseIntegr
         DbContext.Users.Add(user);
         DbContext.Events.AddRange(events);
         await DbContext.SaveChangesAsync();
-     
+
         var rule = new MaxActiveEventsRule(DbContext, _logger);
-        
+
         // Act
         var result = await rule.CheckAsync(user);
-        
+
         // Assert
         Assert.True(result.IsSuccess);
     }
@@ -86,12 +86,12 @@ public sealed class MaxActiveEventsRuleTests(WebAppFactory factory) : BaseIntegr
         DbContext.Events.Add(completedEvent);
         DbContext.Events.Add(canceledEvent);
         await DbContext.SaveChangesAsync();
-        
+
         var rule = new MaxActiveEventsRule(DbContext, _logger);
-        
+
         // Act
         var result = await rule.CheckAsync(user);
-        
+
         // Assert
         Assert.True(result.IsSuccess);
     }
