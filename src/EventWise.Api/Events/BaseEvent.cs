@@ -32,13 +32,13 @@ public abstract class BaseEvent(
 
     public IReadOnlyList<EventParticipant> Participants => _participants;
 
-    protected static Result Validate(DateTime startTime, DateTime? endTime)
+    protected static Result Validate(DateTime startTime, DateTime? endTime, DateTime? utcNow)
     {
         if (endTime.HasValue && startTime > endTime)
         {
             return Result.Failure(EventErrors.StartTimeAfterEndTime);
         }
-        if (startTime < DateTime.UtcNow)
+        if (startTime < (utcNow ?? DateTime.UtcNow))
         {
             return Result.Failure(EventErrors.StartTimeInPast);
         }
