@@ -1,22 +1,20 @@
 ﻿using EventWise.Api.Common;
+using EventWise.Api.Users;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace EventWise.Api.Events;
 
-public sealed class MaxActiveEventsRule(
-    ApplicationDbContext context,
-    IDateTimeProvider dateTimeProvider) : IRule<UserEvent>
+public sealed class MaxActiveEventsRule(ApplicationDbContext context) : IRule<User>
 {
     // This can be later moved to configuration
     public const int MaxActiveEvents = 3;
     private readonly ApplicationDbContext _context = context;
-    private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
-    public async Task<Result> CheckAsync(UserEvent entity)
+    public async Task<Result> CheckAsync(User entity)
     {
         var activeEventsCount = await _context.Events
-            .CountAsync(e => e.HostId == entity.HostId && e.EndTimeUtc > _dateTimeProvider.UtcNow);
+            .CountAsync(e => e.HostId == entity.Id && (e.EventState == EventState.Published || e.EventState == EventState.InProgress));
 
         if (activeEventsCount >= MaxActiveEvents)
         {

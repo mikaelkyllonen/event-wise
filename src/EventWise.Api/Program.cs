@@ -1,3 +1,5 @@
+using System.Data;
+
 using EventWise.Api;
 using EventWise.Api.Common;
 using EventWise.Api.Events;
@@ -34,6 +36,7 @@ builder.Services.AddFeatureManagement();
 builder.Services.AddHostedService<EventStateTransitionBackgroundService>();
 
 builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+builder.Services.AddTransient<IRule<User>, MaxActiveEventsRule>();
 
 var app = builder.Build();
 
@@ -68,9 +71,21 @@ app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbCon
 })
 .WithTags("Events");
 
-app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, MaxActiveEventsRule rule, CancellationToken ct) =>
 {
     var userId = userContext.UserId();
+    var user = await dbContext.Users.FindAsync([userId], ct);
+    if (user is null)
+    {
+        return Results.NotFound();
+    }
+
+    var maxActiveEventsResult = await rule.CheckAsync(user);
+    if (maxActiveEventsResult.IsFailure)
+    {
+        return Results.BadRequest(maxActiveEventsResult.Error);
+    }
+
     var result = UserEvent.Create(
         userId,
         request.Name,
