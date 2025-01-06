@@ -31,9 +31,10 @@ public sealed class UserEvent : BaseEvent
         string location,
         int maxParticipants,
         DateTime startTimeUtc,
-        DateTime? endTimeUtc)
+        DateTime? endTimeUtc,
+        DateTime? utcNow = default)
     {
-        var baseValidation = Validate(startTimeUtc, endTimeUtc);
+        var baseValidation = Validate(startTimeUtc, endTimeUtc, utcNow);
         if (baseValidation.IsFailure)
         {
             return Result.Failure<UserEvent>(baseValidation.Error);

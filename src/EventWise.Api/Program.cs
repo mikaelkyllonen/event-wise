@@ -1,4 +1,5 @@
 using EventWise.Api;
+using EventWise.Api.Common;
 using EventWise.Api.Events;
 using EventWise.Api.Extensions;
 using EventWise.Api.Users;
@@ -29,6 +30,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddFeatureManagement();
+
+builder.Services.AddHostedService<EventStateTransitionBackgroundService>();
+
+builder.Services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
 var app = builder.Build();
 
