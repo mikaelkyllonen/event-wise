@@ -71,7 +71,7 @@ app.MapGet("/events", async (UserContext userContext, ApplicationDbContext dbCon
 })
 .WithTags("Events");
 
-app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, MaxActiveEventsRule rule, CancellationToken ct) =>
+app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, IRule<User> rule, CancellationToken ct) =>
 {
     var userId = userContext.UserId();
     var user = await dbContext.Users.FindAsync([userId], ct);
