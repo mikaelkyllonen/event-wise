@@ -20,6 +20,10 @@ public static class EventErrors
         "Event.MaxParticipantsGreaterThanMax",
         $"Max participants cannot be greater than {UserEvent.MaxParticipantsForUserEvents}");
 
+    public static readonly Error MaxActiveEvents = new(
+        "Event.MaxActiveEvents",
+        $"Cannot have more than {MaxActiveEvents} active events");
+
     public static class Participation
     {
         public static readonly Error AlreadyParticipating = new(
