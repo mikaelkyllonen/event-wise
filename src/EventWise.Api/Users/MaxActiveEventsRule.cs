@@ -1,15 +1,16 @@
 ﻿using EventWise.Api.Common;
-using EventWise.Api.Users;
+using EventWise.Api.Events;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace EventWise.Api.Events;
+namespace EventWise.Api.Users;
 
-public sealed class MaxActiveEventsRule(ApplicationDbContext context) : IRule<User>
+public sealed class MaxActiveEventsRule(ApplicationDbContext context, ILogger<MaxActiveEventsRule> logger) : IRule<User>
 {
     // This can be later moved to configuration
     public const int MaxActiveEvents = 3;
     private readonly ApplicationDbContext _context = context;
+    private readonly ILogger<MaxActiveEventsRule> _logger = logger;
 
     public async Task<Result> CheckAsync(User entity)
     {
@@ -18,6 +19,7 @@ public sealed class MaxActiveEventsRule(ApplicationDbContext context) : IRule<Us
 
         if (activeEventsCount >= MaxActiveEvents)
         {
+            _logger.LogWarning("User {UserId} has reached the maximum number of active events ({MaxActiveEvents}).", entity.Id, MaxActiveEvents);
             return Result.Failure(EventErrors.MaxActiveEvents);
         }
 
