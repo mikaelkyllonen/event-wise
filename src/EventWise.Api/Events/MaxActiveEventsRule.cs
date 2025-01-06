@@ -9,7 +9,7 @@ public sealed class MaxActiveEventsRule(
     IDateTimeProvider dateTimeProvider) : IRule<UserEvent>
 {
     // This can be later moved to configuration
-    private const int _maxActiveEvents = 3;
+    public const int MaxActiveEvents = 3;
     private readonly ApplicationDbContext _context = context;
     private readonly IDateTimeProvider _dateTimeProvider = dateTimeProvider;
 
@@ -18,7 +18,7 @@ public sealed class MaxActiveEventsRule(
         var activeEventsCount = await _context.Events
             .CountAsync(e => e.HostId == entity.HostId && e.EndTimeUtc > _dateTimeProvider.UtcNow);
 
-        if (activeEventsCount >= _maxActiveEvents)
+        if (activeEventsCount >= MaxActiveEvents)
         {
             return Result.Failure(EventErrors.MaxActiveEvents);
         }
