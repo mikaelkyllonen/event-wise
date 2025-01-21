@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +24,10 @@ public sealed class WebAppFactory() : WebApplicationFactory<Program>, IAsyncLife
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        var jwtOptions = TestJwtConfiguration.CreateTestOptions();
+        builder.ConfigureAppConfiguration((context, configBuilder) =>
+            configBuilder.AddInMemoryCollection(TestJwtConfiguration.ToConfigurationDictionary(jwtOptions)));
+
         builder.ConfigureTestServices(services =>
         {
             // https://github.com/dotnet/efcore/issues/35126
