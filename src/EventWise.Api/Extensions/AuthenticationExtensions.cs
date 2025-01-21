@@ -27,10 +27,10 @@ public static class AuthenticationExtensions
                     RequireSignedTokens = true,
                 };
 
-                if (builder.Environment.IsDevelopment() && jwtOptions.SigningKeys.Length > 0)
+                if (builder.Environment.IsDevelopment())
                 {
                     options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(
-                        Convert.FromBase64String(jwtOptions.SigningKeys[0].Value));
+                        Convert.FromBase64String(jwtOptions.SigningKeys[0].Value) ?? throw new InvalidOperationException("Signing key is missing."));
                 }
             });
 
