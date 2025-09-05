@@ -20,7 +20,7 @@ public abstract class BaseEvent(
 
     protected readonly List<EventParticipant> _participants = [];
 
-    public Guid Id { get; private set; } = Guid.CreateVersion7();
+    public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid HostId { get; private set; } = hostId;
     public string Name { get; private set; } = name;
     public string Description { get; private set; } = description;
