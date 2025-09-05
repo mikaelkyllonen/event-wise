@@ -14,14 +14,15 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi(options =>
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<DefaultExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("User", policy => policy.RequireRole("user"));
+    .AddPolicy("User", policy => policy.RequireRole("user"))
+    .AddPolicy("EventOrganizer", policy => policy.RequireRole("event_organizer"));
 
 builder.AddAuthentication();
 
@@ -42,8 +43,8 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
     await using var scope = app.Services.CreateAsyncScope();
     using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -104,7 +105,49 @@ app.MapPost("/events", async ([FromBody] CreateEventRequest request, UserContext
 
     return Results.Created($"/events/{result.Value.Id}", new CreateEventResponse(result.Value.Id));
 })
-.RequireAuthorization("User")
+.RequireAuthorization("EventOrganizer")
+.WithTags("Events");
+
+app.MapPut("/events/{id}", async (Guid id, [FromBody] UpdateEventRequest request, UserContext userContext, ApplicationDbContext dbContext, CancellationToken ct) =>
+{
+    var userId = userContext.UserId();
+    var @event = await dbContext.Events
+        .FirstOrDefaultAsync(e => e.Id == id && e.HostId == userId, ct);
+    
+    if (@event is null)
+    {
+        return Results.NotFound();
+    }
+
+    // For now, we'll create a new event with updated data since the current model doesn't have update methods
+    // In a real application, you'd add Update methods to the BaseEvent class
+    if (@event is UserEvent userEvent)
+    {
+        var updatedEventResult = UserEvent.Create(
+            userId,
+            request.Name ?? userEvent.Name,
+            request.Description ?? userEvent.Description,
+            request.Location ?? userEvent.Location,
+            request.MaxParticipants ?? userEvent.MaxParticipants,
+            request.StartTime ?? userEvent.StartTimeUtc,
+            request.EndTime ?? userEvent.EndTimeUtc);
+            
+        if (updatedEventResult.IsFailure)
+        {
+            return Results.BadRequest(updatedEventResult.Error);
+        }
+
+        // Update the existing event properties
+        // Note: This is a simplified approach. In production, you'd implement proper update methods
+        dbContext.Entry(@event).CurrentValues.SetValues(updatedEventResult.Value);
+        await dbContext.SaveChangesAsync(ct);
+        
+        return Results.Ok(new UpdateEventResponse(@event.Id));
+    }
+
+    return Results.BadRequest("Event type not supported for updates");
+})
+.RequireAuthorization("EventOrganizer")
 .WithTags("Events");
 
 app.MapGet("/events/{id}", async (Guid id, ApplicationDbContext dbContext, CancellationToken ct) =>
@@ -209,6 +252,16 @@ public sealed record CreateEventRequest(
     DateTime EndTime);
 
 public sealed record CreateEventResponse(Guid Id);
+
+public sealed record UpdateEventRequest(
+    string? Name,
+    string? Description,
+    string? Location,
+    int? MaxParticipants,
+    DateTime? StartTime,
+    DateTime? EndTime);
+
+public sealed record UpdateEventResponse(Guid Id);
 
 public sealed record GetEventResponse(
     Guid Id,
